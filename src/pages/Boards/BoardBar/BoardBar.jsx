@@ -140,7 +140,7 @@ const BoardBar = ({ board }) => {
               border: "2px solid #fff",
               color: "#fff",
               cursor: "pointer",
-              "&:first-child": {
+              "&:first-of-type": {
                 backgroundColor: "#95a5a6",
               },
             },
