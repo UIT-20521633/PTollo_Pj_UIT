@@ -1,4 +1,4 @@
-import Cards1 from "../assets/img/Landingpage img/background.jpg";
+import Cards1 from "~/assets/img/Landingpage_img/background.jpg";
 import { FaGoogle } from "react-icons/fa";
 import { FaFacebook } from "react-icons/fa6";
 import { FaEye, FaEyeSlash } from "react-icons/fa";

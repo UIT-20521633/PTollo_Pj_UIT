@@ -1,4 +1,4 @@
-import Cards1 from "../assets/img/Landingpage img/background.jpg";
+import Cards1 from "~/assets/img/Landingpage_img/background.jpg";
 import NavBarLandingPage from "../../components/NavBar/NavBarLandingPage";
 import Slogan from "../../components/Slogon/Slogan";
 
