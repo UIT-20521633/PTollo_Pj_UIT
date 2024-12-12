@@ -26,7 +26,7 @@ const DashBoardUser = () => {
         sx={{
           display: "flex",
           alignItems: "center",
-          margin: "0px 8px 2px",
+          margin: "0px 8px 20px",
           ml: 4,
         }}>
         <Avatar
@@ -59,7 +59,7 @@ const DashBoardUser = () => {
           </Box>
         </Box>
       </Box>
-      <hr />
+      <hr className="my-2" />
       {/* Starred boards */}
       <div className="starContent d-flex align-items-center">
         <PersonOutlineOutlinedIcon

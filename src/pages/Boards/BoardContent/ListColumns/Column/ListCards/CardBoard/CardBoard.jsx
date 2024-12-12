@@ -7,12 +7,19 @@ import AttachmentIcon from "@mui/icons-material/Attachment";
 import CommentIcon from "@mui/icons-material/Comment";
 import GroupIcon from "@mui/icons-material/Group";
 import CardActions from "@mui/material/CardActions";
+import {
+  updateCurrentActiveCard,
+  showModalActiveCard,
+} from "~/redux/activeCard/activeCardSlice";
+import { useDispatch } from "react-redux";
 
 //dnd-kit
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 
 const CardBoard = ({ card }) => {
+  const dispatch = useDispatch();
+
   const {
     attributes,
     listeners,
@@ -39,26 +46,35 @@ const CardBoard = ({ card }) => {
       !!card?.attachments?.length
     );
   };
+  const setActiveCardToRedux = () => {
+    //Cập nhật data cho activeCard trong redux
+    dispatch(updateCurrentActiveCard(card));
+    //Hiện Moidal ActiveCard lên
+    dispatch(showModalActiveCard());
+  };
   return (
     <MuiCard
+      //Kiểm tra xem đã click vào card chưa để mở active card
+      onClick={setActiveCardToRedux}
       ref={setNodeRef}
       style={dndKitCardStyles}
       {...attributes}
       {...listeners}
       sx={{
         cursor: "pointer",
-        boxShadow: "0 1px 1px rgba(0,0,0,.2)",
+        boxShadow: "0 1px 1px rgba(0,0,0,.5)",
         overflow: "unset",
         display: card?.FE_PlaceholderCard ? "none" : "block",
+        border: "1px solid transparent",
+        "&:hover": { border: "1px solid #fd79a8" },
         //overflow: card?.FE_PlaceholderCard ? "hidden" : "unset",
         //height: card?.FE_PlaceholderCard ? "0" : "unset",
       }}>
       {card?.cover && (
         <CardMedia
-          component="img"
-          height="140"
+          sx={{ height: 140 }}
           image={card?.cover}
-          alt="green iguana"
+          title="green iguana"
         />
       )}
       <CardContent sx={{ p: 1.5, "&:last-child": { p: 1.5 } }}>

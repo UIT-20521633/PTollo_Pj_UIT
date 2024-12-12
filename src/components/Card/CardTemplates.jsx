@@ -59,7 +59,7 @@ const CardTemplates = ({ title, srcImage, showIcon = false }) => {
             Templates
           </button>
         )}
-        <h6 className="card-title text-white my-1">{title}</h6>
+        <h6 className="card-title text-white my-1 font-medium">{title}</h6>
       </div>
 
       <div

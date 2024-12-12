@@ -3,9 +3,9 @@ export default {
   content: ["./src/**/*.{js,jsx,ts,tsx}"],
   theme: {
     extend: {
-      fontFamily: {
-        sora: ["Sora"],
-      },
+      // fontFamily: {
+      //   sora: ["Sora"],
+      // },
       colors: {
         "purple-200": "#DAC7FC",
         "purple-300": "#CAA6FF",

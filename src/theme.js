@@ -22,7 +22,6 @@ const theme = createTheme({
     columnHeaderHeight: COLUMN_HEADER_HEIGHT,
     columnFooterHeight: COLUMN_FOOTER_HEIGHT,
   },
-  themTemplate: {},
   cssVariables: {
     colorSchemeSelector: "data-toolpad-color-scheme",
   },

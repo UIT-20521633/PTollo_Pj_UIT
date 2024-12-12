@@ -14,7 +14,7 @@ const Create = () => {
   const open = Boolean(anchorEl);
   // Xử lý responsive
   const matches = useMediaQuery(theme.breakpoints.up("lg"));
-  console.log(matches);
+  // console.log(matches);
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
   };

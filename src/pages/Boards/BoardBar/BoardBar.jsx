@@ -3,18 +3,16 @@ import Box from "@mui/material/Box";
 import StarIcon from "@mui/icons-material/Star";
 import StarOutlineIcon from "@mui/icons-material/StarOutline";
 import Tooltip from "@mui/material/Tooltip";
-import Button from "@mui/material/Button";
 import FlashOnIcon from "@mui/icons-material/FlashOn";
 import IconButton from "@mui/material/IconButton";
-import GroupAddOutlinedIcon from "@mui/icons-material/GroupAddOutlined";
 import FilterListIcon from "@mui/icons-material/FilterList";
 import theme from "~/theme";
 import Chip from "@mui/material/Chip";
 import VpnLockOutlinedIcon from "@mui/icons-material/VpnLockOutlined";
 import AddToDriveIcon from "@mui/icons-material/AddToDrive";
-import Avatar from "@mui/material/Avatar";
-import AvatarGroup from "@mui/material/AvatarGroup";
 import { capitalizeFirstLetter } from "~/utils/formattersAZ";
+import BoardUserGroup from "./BoardUserGroup";
+import InviteBoardUser from "./InviteBoardUser";
 
 const MENU_STYLE = {
   backgroundColor: theme.palette.primary.main,
@@ -65,17 +63,19 @@ const BoardBar = ({ board }) => {
           flexWrap: "wrap",
           justifyContent: { xs: "center", md: "flex-end" }, // Center align on small screens
         }}>
-        <Chip
-          sx={{
-            color: theme.palette.primary.main,
-            border: "none",
-            px: "5px",
-            fontWeight: "800",
-            backgroundColor: "transparent",
-            fontSize: "20px",
-          }}
-          label={board?.title}
-        />
+        <Tooltip title={board?.description}>
+          <Chip
+            sx={{
+              color: theme.palette.primary.main,
+              border: "none",
+              px: "5px",
+              fontWeight: "800",
+              backgroundColor: "transparent",
+              fontSize: "20px",
+            }}
+            label={board?.title}
+          />
+        </Tooltip>
         <Box onClick={handleToggleMark}>
           <Tooltip title="Click to star or unstar this template. Starred templates show up at the top of your boards list.">
             {isMarked ? (
@@ -122,45 +122,10 @@ const BoardBar = ({ board }) => {
           icon={<FilterListIcon sx={{ ml: 0 }} />}
           label="Filter"
         />
-        <Button
-          variant="contained"
-          startIcon={<GroupAddOutlinedIcon sx={{ ml: 0 }} />}
-          sx={{
-            textTransform: "none",
-          }}>
-          Invite
-        </Button>
-        <AvatarGroup
-          max={3}
-          sx={{
-            gap: "7px",
-            "& .MuiAvatar-root": {
-              width: { xs: "26px", md: "28px" }, // Responsive avatar size
-              height: { xs: "26px", md: "28px" },
-              border: "2px solid #fff",
-              color: "#fff",
-              cursor: "pointer",
-              "&:first-of-type": {
-                backgroundColor: "#95a5a6",
-              },
-            },
-          }}>
-          <Tooltip title="Remy Sharp">
-            <Avatar alt="Remy Sharp" src="/static/images/avatar/1.jpg" />
-          </Tooltip>
-          <Tooltip title="Travis Howard">
-            <Avatar alt="Travis Howard" src="/static/images/avatar/2.jpg" />
-          </Tooltip>
-          <Tooltip title="Cindy Baker">
-            <Avatar alt="Cindy Baker" src="/static/images/avatar/3.jpg" />
-          </Tooltip>
-          <Tooltip title="Agnes Walker">
-            <Avatar alt="Agnes Walker" src="/static/images/avatar/4.jpg" />
-          </Tooltip>
-          <Tooltip title="Trevor Henderson">
-            <Avatar alt="Trevor Henderson" src="/static/images/avatar/5.jpg" />
-          </Tooltip>
-        </AvatarGroup>
+        {/* Xử lý mời user vào làm thành viên của Board */}
+        <InviteBoardUser boardId={board._id} />
+        {/* Hiển thị ds thành viên của board */}
+        <BoardUserGroup boardUsers={board?.FE_allUsers} />
       </Box>
     </Box>
   );

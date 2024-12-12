@@ -7,7 +7,7 @@ import Grid from "@mui/material/Grid2";
 import CardTemplates from "~/components/Card/CardTemplates";
 import GroupAddOutlinedIcon from "@mui/icons-material/GroupAddOutlined";
 import theme from "~/theme";
-import "../../DashBoardMain/DashBoardPage.css";
+import "../../BoardsPage/BoardPage.css";
 import SeclectBoard from "./SelectCustom/SeclectBoard";
 import FormControl from "@mui/material/FormControl";
 import SearchIcon from "@mui/icons-material/Search";

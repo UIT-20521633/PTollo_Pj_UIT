@@ -23,8 +23,16 @@
   .MuiTypography-root {
   color: #b64339 !important;
 } */
+/* .css-4s2pl4-MuiButtonBase-root-MuiListItemButton-root.Mui-selected
+  .MuiTypography-root {
+  color: #b64339 !important;
+} */
 .css-1ie2bpi-MuiButtonBase-root-MuiIconButton-root {
   display: none !important;
+}
+.css-m69qwo-MuiStack-root {
+  justify-content: center !important;
+  align-items: center !important;
 }
 @media (min-width: 0px) {
   div.MuiBox-root.css-181ggw6 {
