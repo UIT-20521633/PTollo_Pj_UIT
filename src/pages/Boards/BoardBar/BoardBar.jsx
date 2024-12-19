@@ -3,16 +3,20 @@ import Box from "@mui/material/Box";
 import StarIcon from "@mui/icons-material/Star";
 import StarOutlineIcon from "@mui/icons-material/StarOutline";
 import Tooltip from "@mui/material/Tooltip";
-import FlashOnIcon from "@mui/icons-material/FlashOn";
+// import FlashOnIcon from "@mui/icons-material/FlashOn";
 import IconButton from "@mui/material/IconButton";
 import FilterListIcon from "@mui/icons-material/FilterList";
 import theme from "~/theme";
 import Chip from "@mui/material/Chip";
 import VpnLockOutlinedIcon from "@mui/icons-material/VpnLockOutlined";
 import AddToDriveIcon from "@mui/icons-material/AddToDrive";
+import VideoCallSharpIcon from "@mui/icons-material/VideoCallSharp";
 import { capitalizeFirstLetter } from "~/utils/formattersAZ";
 import BoardUserGroup from "./BoardUserGroup";
 import InviteBoardUser from "./InviteBoardUser";
+import CallGroupBoard from "./CallGroupBoard";
+import { useSelector } from "react-redux";
+import { selectCurrentUser } from "~/redux/user/userSlice";
 
 const MENU_STYLE = {
   backgroundColor: theme.palette.primary.main,
@@ -31,7 +35,7 @@ const MENU_STYLE = {
 
 const BoardBar = ({ board }) => {
   // object Detructuring: bóc tách phần tử
-
+  const currentUser = useSelector(selectCurrentUser);
   const [isMarked, setIsMarked] = React.useState(false);
   const handleToggleMark = () => {
     setIsMarked(!isMarked);
@@ -112,11 +116,7 @@ const BoardBar = ({ board }) => {
           flexWrap: "wrap",
           justifyContent: { xs: "center", md: "flex-end" }, // Center align on small screens
         }}>
-        <Tooltip title="Automation">
-          <IconButton>
-            <FlashOnIcon sx={{ color: theme.palette.primary.main }} />
-          </IconButton>
-        </Tooltip>
+        <CallGroupBoard userCall={currentUser} />
         <Chip
           sx={MENU_STYLE}
           icon={<FilterListIcon sx={{ ml: 0 }} />}

@@ -40,6 +40,9 @@ import { NAVIGATION_MAIN, NAVIGATION_USER } from "~/config/navigation";
 import Profiles from "./Profiles/Profiles";
 import Notifications from "./Notifications/Notifications";
 import AutoCompleteSearchBoard from "./SearchBoards/AutoCompleteSearchBoard";
+import { socketIoInstance } from "~/socketClient";
+import { selectCurrentUser } from "~/redux/user/userSlice";
+import { useSelector } from "react-redux";
 
 function PageContent({ pathname }) {
   return (
@@ -205,7 +208,10 @@ const DashBoard = ({ hideNav }) => {
   // const router = useDemoRouter("/dashboard");
   //some(): Duyệt qua từng phần tử trong mảng pathNavigationUser. Đối với mỗi phần tử, nó kiểm tra điều kiện trong hàm callback.
   //endsWith(): Phương thức này kiểm tra xem chuỗi path có kết thúc bằng chuỗi /userWorkspace/${segment} hay không.
-  // Hàm xử lý khi nhấn vào logo để đặt lại điều hướng về NAVIGATION_MAIN
+  // Hàm xử lý khi nhấn vào logo để đặt lại điều hướng về NAVIGATION_MAI
+  //lấy userId từ store
+  const userId = useSelector(selectCurrentUser)._id;
+  socketIoInstance.emit("registerUser", { userId: userId });
   return (
     <AppProvider
       branding={{

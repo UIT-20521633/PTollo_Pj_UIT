@@ -13,6 +13,8 @@ import { selectCurrentUser } from "~/redux/user/userSlice";
 import Settings from "~/pages/Settings/Settings";
 import { useEffect, useState } from "react";
 import Boards from "./pages/Boards";
+import CallPage from "./pages/CallPage/CallPage";
+import { socketIoInstance } from "./socketClient";
 
 /**
  * Giải pháp Clean Code trong việc xác định các route nào cần đăng nhập tài khoản xong thì mới cho truy cập
@@ -37,7 +39,10 @@ function AppRoutes() {
   const [isSettingsPage, setIsSettingsPage] = useState(false);
   useEffect(() => {
     // Kiểm tra xem đường dẫn có phải là /settings không
-    if (location.pathname.startsWith("/settings")) {
+    if (
+      location.pathname.startsWith("/settings") ||
+      location.pathname.startsWith("/call")
+    ) {
       // Nếu là /settings thì set isSettingsPage thành true để ẩn thanh nav
       setIsSettingsPage(true);
     } else {
@@ -45,7 +50,6 @@ function AppRoutes() {
       setIsSettingsPage(false);
     }
   }, [location.pathname]); // Chạy lại mỗi khi pathname thay đổi
-
   return (
     <Routes>
       {/* Redirect Route */}
@@ -71,6 +75,8 @@ function AppRoutes() {
           {/* User Setting */}
           <Route path="/settings/account" element={<Settings />} />
           <Route path="/settings/security" element={<Settings />} />
+          {/* Call  */}
+          <Route path="/call/:roomId" element={<CallPage />} />
         </Route>
       </Route>
       {/* Authentication */}

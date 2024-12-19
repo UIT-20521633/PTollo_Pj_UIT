@@ -120,3 +120,29 @@ export const inviteUserToBoardAPI = async (data) => {
   toast.success("User invited successfully!");
   return response.data;
 };
+
+//Call API
+export const createNewCallAPI = async (newCallData) => {
+  const response = await authorizedAxiosInstance.post(
+    `${API_ROOT}/v1/calls/create-room`,
+    newCallData
+  );
+  toast.success("Call group created successfully!");
+  return response.data;
+};
+export const joinRoomCallAPI = async (newCallData) => {
+  const response = await authorizedAxiosInstance.post(
+    `${API_ROOT}/v1/calls/join-room`,
+    newCallData
+  );
+  toast.success("Call group joined successfully!");
+  return response.data;
+};
+export const broadcastRoomIdToUsers = async (data) => {
+  const response = await authorizedAxiosInstance.post(
+    `${API_ROOT}/v1/calls/broadcast-room-id`,
+    data
+  );
+  toast.success("Room ID broadcasted successfully!");
+  return response.data;
+};

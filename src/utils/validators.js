@@ -24,3 +24,9 @@ export const singleFileValidator = (file) => {
   }
   return null;
 };
+
+// Liên quan đến Validate room call
+export const ROOM_ID_RULE = /^[a-zA-Z0-9]{15,}$/; // 10 ký tự trở lên
+export const ROOM_ID_RULE_MESSAGE = "Room ID must be at least 15 characters.";
+export const ROOM_ID_REQUIRED_MESSAGE = "Room ID is required.";
+export const ROOM_ID_INVALID_MESSAGE = "Room ID is invalid.";

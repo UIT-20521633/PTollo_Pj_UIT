@@ -23,8 +23,16 @@ import {
 import { socketIoInstance } from "~/socketClient";
 import { selectCurrentUser } from "~/redux/user/userSlice";
 import { useNavigate } from "react-router-dom";
+import { joinRoomCallAPI } from "~/apis";
+import { setCallInfo } from "~/redux/activieCall/callSlice";
+import { toast } from "react-toastify";
 
 const BOARD_INVITATION_STATUS = {
+  PENDING: "PENDING",
+  ACCEPTED: "ACCEPTED",
+  REJECTED: "REJECTED",
+};
+const JOIN_ROOM_STATUS = {
   PENDING: "PENDING",
   ACCEPTED: "ACCEPTED",
   REJECTED: "REJECTED",
@@ -32,6 +40,9 @@ const BOARD_INVITATION_STATUS = {
 
 function Notifications() {
   const [anchorEl, setAnchorEl] = useState(null);
+  const [loading, setLoading] = useState(false); // Loading state
+  //Lấy thông tin user hiện tại đang đăng nhập trong redux store
+  const userCall = useSelector(selectCurrentUser);
   const open = Boolean(anchorEl);
   const handleClickNotificationIcon = (event) => {
     setAnchorEl(event.currentTarget);
@@ -69,12 +80,35 @@ function Notifications() {
         setNewNotification(true);
       }
     };
+    // Lắng nghe sự kiện từ backend
+    const onReceiveRoomIdNotification = (data) => {
+      console.log("Received data from server:", data);
+      if (data?.userId === currentUser._id) {
+        if (data?.roomId) {
+          // Thêm thông báo vào Redux store hoặc hiển thị ngay trong UI
+          const roomNotification = {
+            inviter: { displayName: "System" },
+            board: { title: "Group Call Room" },
+            roomId: data.roomId,
+            createdAt: new Date().toISOString(),
+          };
+
+          dispatch(addNotification(roomNotification)); // Lưu thông báo vào Redux
+          setNewNotification(true); // Đánh dấu có thông báo mới
+        }
+      }
+    };
     //Lắng nghe 1 cái event realtime có tên là BE_USER_INVITED_TO_BOARD từ server gửi về
     socketIoInstance.on("BE_USER_INVITED_TO_BOARD", onReceiveNewInvitation);
+    socketIoInstance.on("BE_SEND_ROOMID_TO_USERS", onReceiveRoomIdNotification);
 
     // clean up sự kiện để ngăn chặn việc bị đăng ký lặp lại sự kiện khi component bị render lại
     return () => {
       socketIoInstance.off("BE_USER_INVITED_TO_BOARD", onReceiveNewInvitation);
+      socketIoInstance.off(
+        "BE_SEND_ROOMID_TO_USERS",
+        onReceiveRoomIdNotification
+      );
     };
   }, [dispatch, currentUser._id]); //dispatch là một dependency của useEffect nên phải để vào mảng dependency để useEffect chạy lại khi dispatch thay đổi giá trị nghĩa là khi fetchInvitationsAPI() được gọi thì useEffect sẽ chạy lại để lấy dữ liệu mới từ redux store và hiển thị lên giao diện người dùng thông qua notifications ở trên giao diện người dùng sẽ hiển thị thông báo mời tham gia board
 
@@ -91,6 +125,30 @@ function Notifications() {
     });
   };
   // console.log(newNotification);
+
+  // Function to join a room
+  const handleJoinRoom = async (roomId) => {
+    if (loading) return;
+    setLoading(true); // Set loading state to true
+    const newCallData = {
+      roomId: roomId,
+      userId: userCall._id,
+    };
+    try {
+      const { roomId, token } = await joinRoomCallAPI(newCallData);
+      if (roomId && token) {
+        dispatch(setCallInfo({ roomId: roomId, token: token }));
+        navigate(`/call/${roomId}`);
+      } else {
+        toast.error("Failed to join room. Missing call information.");
+      }
+    } catch (error) {
+      toast.error("Error creating room.");
+      console.error("Error:", error); // Log the error to console for better debugging
+    } finally {
+      setLoading(false); // Reset loading state
+    }
+  };
   return (
     <Box>
       <Tooltip title="Notifications">
@@ -147,14 +205,31 @@ function Notifications() {
                     <GroupAddIcon fontSize="small" />
                   </Box>
                   <Box>
-                    <strong>{notifications.inviter.displayName}</strong> had
-                    invited you to join the board{" "}
+                    <strong>{notifications.inviter.displayName}</strong>{" "}
+                    {notifications.roomId
+                      ? "had invited you to join the group call room "
+                      : "had invited you to join the board "}
                     <strong>{notifications.board.title}</strong>
                   </Box>
                 </Box>
-
+                {/* Hiển thị roomid nếu có */}
+                {notifications.roomId && (
+                  <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                    <Typography variant="body2">
+                      Room ID: <strong>{notifications.roomId}</strong>
+                    </Typography>
+                    {/* Button để tham gia room */}
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      size="small"
+                      onClick={() => handleJoinRoom(notifications.roomId)}>
+                      Join Room
+                    </Button>
+                  </Box>
+                )}
                 {/* Khi Status của thông báo này là PENDING thì sẽ hiện 2 Button */}
-                {notifications.boardInvitation.status ===
+                {notifications.boardInvitation?.status ===
                   BOARD_INVITATION_STATUS.PENDING && (
                   <Box
                     sx={{
@@ -202,7 +277,7 @@ function Notifications() {
                     gap: 1,
                     justifyContent: "flex-end",
                   }}>
-                  {notifications.boardInvitation.status ===
+                  {notifications.boardInvitation?.status ===
                     BOARD_INVITATION_STATUS.ACCEPTED && (
                     <Chip
                       icon={<DoneIcon />}
@@ -211,7 +286,7 @@ function Notifications() {
                       size="small"
                     />
                   )}
-                  {notifications.boardInvitation.status ===
+                  {notifications.boardInvitation?.status ===
                     BOARD_INVITATION_STATUS.REJECTED && (
                     <Chip
                       icon={<NotInterestedIcon />}
@@ -221,6 +296,7 @@ function Notifications() {
                     />
                   )}
                 </Box>
+
                 {/* Thời gian của thông báo */}
                 <Box sx={{ textAlign: "right" }}>
                   <Typography variant="span" sx={{ fontSize: "13px" }}>

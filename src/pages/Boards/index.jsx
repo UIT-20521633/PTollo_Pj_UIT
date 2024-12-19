@@ -7,9 +7,6 @@ import Typography from "@mui/material/Typography";
 import Grid from "@mui/material/Grid2";
 import Stack from "@mui/material/Stack";
 import Divider from "@mui/material/Divider";
-import SpaceDashboardIcon from "@mui/icons-material/SpaceDashboard";
-import ListAltIcon from "@mui/icons-material/ListAlt";
-import HomeIcon from "@mui/icons-material/Home";
 import ArrowRightIcon from "@mui/icons-material/ArrowRight";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
@@ -21,12 +18,17 @@ import randomColor from "randomcolor";
 import { fetchBoardsAPI } from "~/apis";
 import { DEFAULT_PAGE, DEFAULT_ITEMS_PER_PAGE } from "~/utils/constants";
 import SidebarCreateBoardModal from "./create";
+import { socketIoInstance } from "~/socketClient";
+import { useSelector } from "react-redux";
+import { selectCurrentUser } from "~/redux/user/userSlice";
 
 function Boards() {
   // Số lượng bản ghi boards hiển thị tối đa trên 1 page tùy dự án (thường sẽ là 12 cái)
   const [boards, setBoards] = useState(null);
   // Tổng toàn bộ số lượng bản ghi boards có trong Database mà phía BE trả về để FE dùng tính toán phân trang
   const [totalBoards, setTotalBoards] = useState(null);
+  // Lấy thông tin user hiện tại từ store redux
+  const user = useSelector(selectCurrentUser);
 
   // Xử lý phân trang từ url với MUI: https://mui.com/material-ui/react-pagination/#router-integration
   const location = useLocation();
@@ -62,7 +64,6 @@ function Boards() {
     // Đơn giản là cứ fetch lại danh sách board tương tự trong useEffect (f5 lại trang)
     fetchBoardsAPI(location.search).then(updateStateData);
   };
-
   // Lúc chưa tồn tại boards > đang chờ gọi api thì hiện loading
   if (!boards) {
     return <PageLoadingSpinner caption="Loading Boards..." />;

@@ -8,6 +8,8 @@ import { persistReducer } from "redux-persist";
 import storage from "redux-persist/lib/storage"; // default là localstorage
 import { activeCardReducer } from "./activeCard/activeCardSlice";
 import { notificationsReducer } from "./notifications/notificationsSlice";
+import { Call } from "@mui/icons-material";
+import { callInfoReducer } from "./activieCall/callSlice";
 
 // Cấu hình persist
 const rootPersistConfig = {
@@ -24,6 +26,7 @@ const reducers = combineReducers({
   user: userReducer,
   activeCard: activeCardReducer,
   notifications: notificationsReducer,
+  callInfo: callInfoReducer,
 });
 // Thực hiện persist Reducer
 const persistedReducers = persistReducer(rootPersistConfig, reducers);

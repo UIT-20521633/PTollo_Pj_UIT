@@ -20,6 +20,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import PageLoadingSpinner from "~/components/Loading/PageLoadingSpinner";
 import ActiveCard from "~/components/Modal/ActiveCard/ActiveCard";
+import { selectCurrentUser } from "~/redux/user/userSlice";
+import { socketIoInstance } from "~/socketClient";
 
 const BoardPage = () => {
   const dispatch = useDispatch();
@@ -27,9 +29,10 @@ const BoardPage = () => {
   // const [board, setBoard] = useState(null);
   //Lấy dữ liệu từ store
   const board = useSelector(selectCurrentActiveBoard);
-
   //Lấy id từ url
   const { boardId } = useParams();
+  //Lây dữ liệu user hiện tại từ store
+  const currentUser = useSelector(selectCurrentUser);
 
   useEffect(() => {
     //Call API
@@ -126,7 +129,6 @@ const BoardPage = () => {
         ?.cardOrderIds, //Lấy ra mảng cardOrderIds của column mới
     });
   };
-
   if (!board) {
     return <PageLoadingSpinner caption="Loading Board..." />;
   }
