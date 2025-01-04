@@ -4,7 +4,7 @@ import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import KeyboardArrowDownRoundedIcon from "@mui/icons-material/KeyboardArrowDownRounded";
 import theme from "~/theme";
-import CardTitle from "~/Components/Card/CardTitle";
+import CardTitle from "~/components/Card/CardTitle";
 import { selectStarredBoards } from "~/redux/user/userSlice";
 import { useSelector } from "react-redux";
 const Starred = () => {
