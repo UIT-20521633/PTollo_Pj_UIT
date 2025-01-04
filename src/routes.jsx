@@ -14,8 +14,8 @@ import Settings from "~/pages/Settings/Settings";
 import { useEffect, useState } from "react";
 import Boards from "./pages/Boards";
 import CallPage from "./pages/CallPage/CallPage";
-import { socketIoInstance } from "./socketClient";
 import TemplateDetail from "./pages/TemplatesP/TemplateDetail";
+import Landingpage from "./pages/LandingPage/Landingpage";
 
 /**
  * Giải pháp Clean Code trong việc xác định các route nào cần đăng nhập tài khoản xong thì mới cho truy cập
@@ -26,7 +26,7 @@ import TemplateDetail from "./pages/TemplatesP/TemplateDetail";
  */
 const ProtectedRoute = ({ user }) => {
   if (!user) {
-    return <Navigate to="/login" replace={true} />;
+    return <Navigate to="/landingpage" replace={true} />;
   }
   //Nếu đã đăng nhập thì chuyển hướng vào outlet là nhưng route con của route này (được bọc bởi route này)
   return <Outlet />;
@@ -53,6 +53,7 @@ function AppRoutes() {
   }, [location.pathname]); // Chạy lại mỗi khi pathname thay đổi
   return (
     <Routes>
+      <Route path="/landingpage" element={<Landingpage />} />
       {/* Redirect Route */}
       {/* Protected Routes: Hiểu là trong dự án chúng ta là những route chỉ cho truy cập sau khi đã login */}
       <Route element={<ProtectedRoute user={currentUser} />}>
