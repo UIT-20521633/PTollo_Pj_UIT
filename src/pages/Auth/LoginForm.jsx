@@ -1,6 +1,7 @@
 import { Link, useSearchParams, useNavigate } from "react-router-dom";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
+import IconButton from "@mui/material/IconButton";
 import Avatar from "@mui/material/Avatar";
 import LockIcon from "@mui/icons-material/Lock";
 import Typography from "@mui/material/Typography";
@@ -13,6 +14,8 @@ import PtolloIcon from "~/assets/ptollo.svg?react";
 import Divider from "@mui/material/Divider";
 import GoogleIcon from "@mui/icons-material/Google";
 import FacebookIcon from "@mui/icons-material/Facebook";
+import VisibilityOutlinedIcon from "@mui/icons-material/VisibilityOutlined";
+import VisibilityOffOutlinedIcon from "@mui/icons-material/VisibilityOffOutlined";
 import { useForm } from "react-hook-form";
 import {
   EMAIL_RULE,
@@ -23,10 +26,18 @@ import {
 } from "~/utils/validators";
 import FieldErrorAlert from "~/components/Form/FieldErrorAlert";
 import { useDispatch } from "react-redux";
-import { loginUserAPI } from "~/redux/user/userSlice";
+import {
+  loginUserAPI,
+  selectCurrentUser,
+  setIsLoggingIn,
+  updateOnlineUsers,
+} from "~/redux/user/userSlice";
 import { toast } from "react-toastify";
+import { useState } from "react";
+import { initializeSocket } from "~/utils/socketManager";
 
 function LoginForm() {
+  const [showPassword, setShowPassword] = useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -48,7 +59,16 @@ function LoginForm() {
       .then((res) => {
         // console.log(res);
         //Đoạn này check không lỗi(login thành công  ) thì mới chuyển redirect về route /
-        if (!res.error) navigate("/");
+        if (!res.error) {
+          dispatch(setIsLoggingIn(true));
+          // initializeSocket();
+          // Khởi tạo kết nối socket khi đăng nhập thành công
+          const socket = initializeSocket(res.payload._id);
+          socket.on("getOnlineUsers", (userIds) => {
+            dispatch(updateOnlineUsers(userIds));
+          });
+          navigate("/");
+        }
       })
       .catch();
   };
@@ -155,20 +175,36 @@ function LoginForm() {
               <FieldErrorAlert errors={errors} fieldName={"email"} />
             </Box>
             <Box sx={{ marginTop: "1em" }}>
-              <TextField
-                fullWidth
-                label="Enter Password..."
-                type="password"
-                variant="outlined"
-                error={!!errors["password"]}
-                {...register("password", {
-                  required: FIELD_REQUIRED_MESSAGE,
-                  pattern: {
-                    value: PASSWORD_RULE,
-                    message: PASSWORD_RULE_MESSAGE,
-                  },
-                })}
-              />
+              <Box sx={{ position: "relative" }}>
+                <TextField
+                  fullWidth
+                  label="Enter Password..."
+                  type={showPassword ? "text" : "password"}
+                  variant="outlined"
+                  error={!!errors["password"]}
+                  {...register("password", {
+                    required: FIELD_REQUIRED_MESSAGE,
+                    pattern: {
+                      value: PASSWORD_RULE,
+                      message: PASSWORD_RULE_MESSAGE,
+                    },
+                  })}
+                />
+                <IconButton
+                  onClick={() => setShowPassword(!showPassword)}
+                  sx={{
+                    position: "absolute",
+                    right: 0,
+                    top: "20%",
+                    color: "white",
+                  }}>
+                  {showPassword ? (
+                    <VisibilityOffOutlinedIcon />
+                  ) : (
+                    <VisibilityOutlinedIcon />
+                  )}
+                </IconButton>
+              </Box>
               <FieldErrorAlert errors={errors} fieldName={"password"} />
             </Box>
           </Box>

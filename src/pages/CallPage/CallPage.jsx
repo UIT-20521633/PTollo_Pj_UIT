@@ -12,14 +12,22 @@ import {
   selectCurrentCallInfo,
   setCallInfo,
 } from "~/redux/activieCall/callSlice";
-
+import { joinRoomCallAPI } from "~/apis";
+function getUrlParams(url) {
+  ///call/kbA9dlsG1jaGYPh
+  let urlStr = url.split("/")[2];
+  return urlStr;
+}
 function CallPage() {
-  const callInfo = useSelector(selectCurrentCallInfo); // Lấy callInfo từ Redux
+  const url = useLocation().pathname; // Lấy URL hiện tại
+  const roomIdFromUrl = getUrlParams(url);
+  const callInfo = useSelector(selectCurrentCallInfo); // Lấy callInfo từ Reduxhoặc từ Redux
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const zpRef = useRef(null);
   const videoContainerRef = useRef(null);
   const [joined, setJoined] = useState(false);
+
   const currentBoard = useSelector(selectCurrentActiveBoard);
   const currentUser = useSelector(selectCurrentUser);
   // Generate members call
@@ -32,18 +40,28 @@ function CallPage() {
       userID: member._id,
       userName: member.displayName,
     }));
+
   useEffect(() => {
     if (callInfo.roomId && callInfo.token) {
       // Tham gia phòng với thông tin đã lưu trong Redux
       myMeeting(callInfo.roomId, callInfo.token);
     }
-
     return () => {
       if (zpRef.current) {
         zpRef.current.destroy(); // Cleanup on unmount
       }
     };
-  }, [callInfo]);
+  }, [callInfo, dispatch, currentUser._id]);
+
+  if (roomIdFromUrl && !callInfo.roomId && !callInfo.token) {
+    // Nếu có roomId từ URL thì tham gia phòng với roomId đó
+    // Nếu không có token thì gọi API để lấy token
+    const callID = currentUser._id; // Đảm bảo đây là duy nhất
+    joinRoomCallAPI({ roomId: roomIdFromUrl, userId: callID }).then((res) => {
+      dispatch(setCallInfo(res));
+      myMeeting(roomIdFromUrl, res.token);
+    });
+  }
 
   // Generate the token and join the room
   const myMeeting = (roomId, token) => {
@@ -60,8 +78,8 @@ function CallPage() {
       currentUser._id,
       currentUser.name
     );
-    console.log("roomId", roomId);
-    console.log("kitToken", kitToken);
+    // console.log("roomId", roomId);
+    // console.log("kitToken", kitToken);
 
     const zp = ZegoUIKitPrebuilt.create(kitToken);
     const callID = currentUser._id; // Đảm bảo đây là duy nhất
@@ -99,11 +117,6 @@ function CallPage() {
             window.location.pathname,
         },
       ],
-      onUserAvatarSetter: (userList) => {
-        userList.forEach((user) => {
-          user.setUserAvatar(currentUser?.avatar); // Set default avatar
-        });
-      },
       scenario: {
         mode: ZegoUIKitPrebuilt.GroupCall,
       },
@@ -113,7 +126,8 @@ function CallPage() {
         console.log("Đã tham gia phòng thành công");
       },
       onLeaveRoom: () => {
-        navigate(`/board/${currentBoard._id}`); // Navigate back to board on leave
+        setJoined(false); // Mark as left
+        navigate(`/boards`); // Navigate back to board on leave
       },
       onError: (error) => {
         console.error("Lỗi tham gia phòng:", error); // Log lỗi nếu có
@@ -141,15 +155,6 @@ function CallPage() {
   };
 
   // On component mount, extract call type from location and initialize the meeting
-  useEffect(() => {
-    const query = new URLSearchParams(location.search);
-    const roomIdFromUrl = query.get("roomId"); // Lấy roomId từ URL
-    if (roomIdFromUrl && !callInfo.roomId) {
-      // Nếu có roomId từ URL và không có roomId trong Redux
-      // Thì lưu roomId vào Redux và tham gia phòng
-      dispatch(setCallInfo({ roomId: roomIdFromUrl }));
-    }
-  }, [location.search, callInfo.roomId, dispatch]);
 
   return (
     <Box

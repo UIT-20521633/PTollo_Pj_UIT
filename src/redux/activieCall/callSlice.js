@@ -1,10 +1,12 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import authorizedAxiosInstance from "~/utils/authorizeAxios";
 // import authorizedAxiosInstance from "~/utils/authorizeAxios";
 // import { API_ROOT } from "~/utils/constants";
 
 const initialState = {
   roomId: null,
   token: null,
+  listUsersCall: [],
 };
 
 const callInfoSlice = createSlice({
@@ -19,10 +21,14 @@ const callInfoSlice = createSlice({
       state.roomId = null;
       state.token = [];
     },
+    setListUsersCall: (state, action) => {
+      state.listUsersCall = action.payload;
+    },
   },
 });
 
-export const { setCallInfo, clearCallInfo } = callInfoSlice.actions;
+export const { setCallInfo, clearCallInfo, setListUsersCall } =
+  callInfoSlice.actions;
 
 // Selectors: Là nơi dành cho các components bên dưới gọi bằng hook useSelector() để lấy dữ liệu từ trong kho redux store ra sử dụng
 export const selectCurrentCallInfo = (state) => {

@@ -4,7 +4,7 @@ import { API_ROOT } from "~/utils/constants";
 
 // Khởi tạo giá trị của một Slice trong redux
 const initialState = {
-  currentNotifications: null,
+  currentNotifications: [],
 };
 
 // Các hành động gọi api (bất đồng bộ) và cập nhật dữ liệu vào Redux, dùng Middleware createAsyncThunk đi kèm với extraReducers
@@ -16,6 +16,18 @@ export const fetchInvitationsAPI = createAsyncThunk(
     const response = await authorizedAxiosInstance.get(
       `${API_ROOT}/v1/invitations`
     );
+    console.log("response board", response.data);
+    // Lưu ý: axios sẽ trả kết quả về qua property của nó là data
+    return response.data;
+  }
+);
+export const fetchInvitationsRoomAPI = createAsyncThunk(
+  "notifications/fetchInvitationsRoomAPI",
+  async () => {
+    const response = await authorizedAxiosInstance.get(
+      `${API_ROOT}/v1/calls/get-room`
+    );
+    console.log("response room", response.data);
     // Lưu ý: axios sẽ trả kết quả về qua property của nó là data
     return response.data;
   }
@@ -27,6 +39,15 @@ export const updateBoardInvitationAPI = createAsyncThunk(
     const response = await authorizedAxiosInstance.put(
       `${API_ROOT}/v1/invitations/board/${invitationId}`,
       { status }
+    );
+    return response.data;
+  }
+);
+export const fetchNotificationsDeadlineAPI = createAsyncThunk(
+  "notifications/fetchNotificationsDeadlineAPI",
+  async () => {
+    const response = await authorizedAxiosInstance.get(
+      `${API_ROOT}/v1/notifications/deadline`
     );
     return response.data;
   }
@@ -47,6 +68,7 @@ export const notificationsSlice = createSlice({
     // Thêm mới một cái bản ghi notification vào đầu mảng currentNotifications
     addNotification: (state, action) => {
       const incomingInvitation = action.payload;
+      state.currentNotifications = state.currentNotifications || [];
       // unshift là thêm phần từ vào đầu mảng, ngược lại với push
       state.currentNotifications.unshift(incomingInvitation);
     },
@@ -57,16 +79,26 @@ export const notificationsSlice = createSlice({
       let incomingInvitations = action.payload;
       // Đoạn này đảo ngược lại mảng invitations nhận được, đơn giản là để hiển thị cái mới nhất lên đầu
       state.currentNotifications = Array.isArray(incomingInvitations)
-        ? incomingInvitations.reverse() //reverse(): Đảo ngược thứ tự của các phần tử trong mảng
+        ? [...incomingInvitations].reverse() //reverse(): Đảo ngược thứ tự của các phần tử trong mảng
         : [];
+    });
+    builder.addCase(fetchInvitationsRoomAPI.fulfilled, (state, action) => {
+      let incomingInvitationRooms = action.payload;
+      state.currentNotifications = Array.isArray(incomingInvitationRooms)
+        ? [...state.currentNotifications, ...incomingInvitationRooms].reverse()
+        : [...state.currentNotifications];
     });
     builder.addCase(updateBoardInvitationAPI.fulfilled, (state, action) => {
       const incomingInvitation = action.payload;
       // Cập nhật lại dữ liệu boardInvitation (bên trong nó sẽ có Status mới sau khi update)
-      const getInvitation = state.currentNotifications.find(
-        (i) => i._id === incomingInvitation._id
-      );
-      getInvitation.boardInvitation = incomingInvitation.boardInvitation;
+      if (state.currentNotifications) {
+        const getInvitation = state.currentNotifications.find(
+          (i) => i._id === incomingInvitation._id
+        );
+        if (getInvitation) {
+          getInvitation.boardInvitation = incomingInvitation.boardInvitation;
+        }
+      }
     });
   },
 });
@@ -81,9 +113,8 @@ export const {
 } = notificationsSlice.actions;
 
 // Selectors: Là nơi dành cho các components bên dưới gọi bằng hook useSelector() để lấy dữ liệu từ trong kho redux store ra sử dụng
-export const selectCurrentNotifications = (state) => {
-  return state.notifications.currentNotifications;
-};
+export const selectCurrentNotifications = (state) =>
+  state.notifications.currentNotifications || [];
 
 // Cái file này tên là notificationsSlice NHƯNG chúng ta sẽ export một thứ tên là Reducer, mọi người lưu ý :D
 // export default notificationsSlice.reducer

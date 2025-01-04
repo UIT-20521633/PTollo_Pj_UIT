@@ -5,12 +5,15 @@ import MenuItem from "@mui/material/MenuItem";
 import KeyboardArrowDownRoundedIcon from "@mui/icons-material/KeyboardArrowDownRounded";
 import theme from "~/theme";
 import CardSmall from "~/components/Card/CardSmall";
+import { useSelector } from "react-redux";
+import { selectRecentlyViewedBoards } from "~/redux/user/userSlice";
 const Recent = () => {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
   };
+  const recentlyViewedBoards = useSelector(selectRecentlyViewedBoards);
   const handleClose = () => {
     setAnchorEl(null);
   };
@@ -31,16 +34,27 @@ const Recent = () => {
         open={open}
         style={{ marginTop: theme.Ptollo.marTopMenu }}
         onClose={handleClose}
+        sx={{
+          "& .MuiList-root": {
+            width: "300px",
+            padding: "12px",
+            boxShadow: "0px 4px 4px rgba(0, 0, 0, 0.25)",
+            borderRadius: "15px",
+          },
+        }}
         MenuListProps={{
           "aria-labelledby": "basic-button",
-          sx: { maxHeight: "183px" },
         }}>
-        <MenuItem onClick={handleClose}>
-          <CardSmall userName={false} />
-        </MenuItem>
-        <MenuItem onClick={handleClose}>
-          <CardSmall />
-        </MenuItem>
+        {recentlyViewedBoards?.map((board) => (
+          <MenuItem onClick={handleClose} key={board.boardId}>
+            <CardSmall
+              title={board.board?.title}
+              description={board.board?.description}
+              boardId={board.boardId}
+              background={board.board?.background}
+            />
+          </MenuItem>
+        ))}
       </Menu>
     </div>
   );

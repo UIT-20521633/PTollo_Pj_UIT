@@ -15,6 +15,7 @@ import { useEffect, useState } from "react";
 import Boards from "./pages/Boards";
 import CallPage from "./pages/CallPage/CallPage";
 import { socketIoInstance } from "./socketClient";
+import TemplateDetail from "./pages/TemplatesP/TemplateDetail";
 
 /**
  * Giải pháp Clean Code trong việc xác định các route nào cần đăng nhập tài khoản xong thì mới cho truy cập
@@ -68,6 +69,7 @@ function AppRoutes() {
             }
           />
           <Route path="/templates" element={<TemplatePage />} />
+          <Route path="/templates/:id" element={<TemplateDetail />} />
           <Route path="/home" element={<HomePage />} />
           {/* Board Detail */}
           <Route path="/board/:boardId" element={<BoardPage />} />

@@ -4,37 +4,56 @@ import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import StarBorderRoundedIcon from "@mui/icons-material/StarBorderRounded";
 import StarRoundedIcon from "@mui/icons-material/StarRounded";
+import { useSelector } from "react-redux";
+import { Link, useNavigate } from "react-router-dom";
+import {
+  selectStarredBoards,
+  toggleStarredBoardAPI,
+} from "~/redux/user/userSlice";
+import { useDispatch } from "react-redux";
+import IconButton from "@mui/material/IconButton";
 
-const CardSmall = ({ userName = true }) => {
-  const [star, setStar] = React.useState(false); // Điều khiển icon sao là đầy hay rỗng
-  const [showStar, setShowStar] = React.useState(false); // Điều khiển hiển thị icon khi hover và khi bấm
-
-  const handleStarStatus = () => {
-    setStar(!star); // Chuyển đổi icon sao giữa đầy và rỗng
-    setShowStar(true); // Giữ icon full ngôi sao luôn hiển thị sau khi bấm
+const CardSmall = ({ title, description, boardId, background }) => {
+  const [isHovered, setIsHovered] = React.useState(false);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const handleStarStatus = (event) => {
+    event.stopPropagation(); // Ngăn chặn sự kiện click lan đến Box bên ngoài
+    dispatch(toggleStarredBoardAPI(boardId));
   };
-
+  const starredBoards = useSelector(selectStarredBoards);
+  const showStar = starredBoards.some((board) => board.boardId === boardId);
   return (
     <Box
       sx={{
         display: "flex",
         alignItems: "center",
-        margin: "0px 8px 2px",
-        position: "relative",
+        justifyContent: "space-between",
+        width: "270px",
+        height: "40px",
       }}
-      onMouseEnter={() => setShowStar(true)} // Hiển thị icon khi hover
+      onMouseEnter={() => setIsHovered(true)} // Hiển thị icon khi hover
       //star là false thì ẩn icon và !star là true thì thực hiện hàm setShowStar(false) nghĩa là ẩn icon
       //star là true thì hiện icon và !star là false thì không thực hiện hàm setShowStar(false) nghĩa là không ẩn icon
-      onMouseLeave={() => !star && setShowStar(false)} // Ẩn icon nếu chưa bấm
-    >
-      <Avatar
-        src="https://picsum.photos/200/300?random=2"
-        variant="rounded"></Avatar>
-      <Box sx={{ ml: 2 }}>
-        <Box sx={{ fontSize: "14px", fontWeight: "500" }}>
-          Mise-En-Place Personal Productivity System
-        </Box>
-        {userName && (
+      onMouseLeave={() => setIsHovered(false)} // Ẩn icon nếu chưa bấm
+      onClick={() => {
+        // Chuyển trang khi click vào Card
+        navigate(`/board/${boardId}`);
+      }}>
+      <Box sx={{ display: "flex", alignItems: "center" }}>
+        <Box
+          sx={{
+            background: background?.startsWith("#")
+              ? background
+              : `url(${background})`,
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            width: "40px",
+            height: "40px",
+            borderRadius: "10px",
+          }}></Box>
+        <Box sx={{ ml: 2 }}>
+          <Box sx={{ fontSize: "14px", fontWeight: "500" }}>{title}</Box>
           <Box
             sx={{
               fontSize: "12px",
@@ -42,20 +61,33 @@ const CardSmall = ({ userName = true }) => {
               lineHeight: "16px",
               color: "#9FADBC",
             }}>
-            namnguyen7040&apos;s workspace
+            {description}
           </Box>
-        )}
+        </Box>
       </Box>
       {/* Hiển thị nút icon dựa trên hover hoặc khi đã bấm */}
-      {showStar && (
-        <Box sx={{ ml: 1 }}>
-          <Button onClick={handleStarStatus} sx={{ p: 0, m: 0, minWidth: 0 }}>
-            {star ? (
-              <StarRoundedIcon sx={{ color: "#e8e809" }} />
+      {isHovered && (
+        <Box // Không chuyển trang khi click vào IconButton
+          onMouseDown={(event) => event.stopPropagation()}>
+          <IconButton onClick={handleStarStatus} sx={{ cursor: "pointer" }}>
+            {showStar ? (
+              <StarRoundedIcon sx={{ color: "yellow" }} />
             ) : (
-              <StarBorderRoundedIcon sx={{ color: "#e8e809" }} />
+              <StarBorderRoundedIcon sx={{ color: "white" }} />
             )}
-          </Button>
+          </IconButton>
+        </Box>
+      )}
+      {showStar && !isHovered && (
+        <Box // Không chuyển trang khi click vào IconButton
+          onMouseDown={(event) => event.stopPropagation()}>
+          <IconButton onClick={handleStarStatus} sx={{ cursor: "pointer" }}>
+            {showStar ? (
+              <StarRoundedIcon sx={{ color: "yellow" }} />
+            ) : (
+              <StarBorderRoundedIcon sx={{ color: "white" }} />
+            )}
+          </IconButton>
         </Box>
       )}
     </Box>

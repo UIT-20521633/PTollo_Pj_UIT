@@ -37,67 +37,12 @@ export const NAVIGATION_MAIN = [
     icon: <HomeIcon />,
   },
   {
+    segment: "settings",
+    title: "Settings",
+    icon: <SettingsIcon />,
+  },
+  {
     kind: "divider",
-  },
-  {
-    kind: "header",
-    title: "Workspaces",
-  },
-  {
-    segment: "userWorkspace",
-    title: (
-      <Box sx={{ fontSize: "14px", fontWeight: "600" }}>
-        NamNguyen7040s <br />
-        Workspace 1
-      </Box>
-    ),
-    icon: (
-      <Avatar
-        sx={{
-          width: "28px",
-          height: "28px",
-          background: theme.Ptollo.avatarColor,
-          fontWeight: "700",
-          color: theme.Ptollo.colorNameAvatar,
-        }}
-        variant="rounded">
-        N
-      </Avatar>
-    ),
-    children: [
-      {
-        segment: "homeBoards",
-        title: "Boards",
-        icon: <DashboardIcon />,
-      },
-      {
-        segment: "highlights",
-        title: "Highlights",
-        icon: <FavoriteBorderTwoToneIcon />,
-      },
-      {
-        segment: "views",
-        title: "Views",
-        icon: <GridViewRoundedIcon />,
-      },
-      {
-        segment: "members",
-        title: (
-          <Box>
-            Members
-            <button className="btn" style={{ marginLeft: "100px" }}>
-              <AddOutlinedIcon />
-            </button>
-          </Box>
-        ),
-        icon: <PeopleAltIcon />,
-      },
-      {
-        segment: "settings",
-        title: "Settings",
-        icon: <SettingsIcon />,
-      },
-    ],
   },
 ];
 export const NAVIGATION_USER = [

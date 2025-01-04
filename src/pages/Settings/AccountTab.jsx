@@ -5,10 +5,11 @@ import Tooltip from "@mui/material/Tooltip";
 import TextField from "@mui/material/TextField";
 import InputAdornment from "@mui/material/InputAdornment";
 import Button from "@mui/material/Button";
-import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import MailIcon from "@mui/icons-material/Mail";
 import AccountBoxIcon from "@mui/icons-material/AccountBox";
 import AssignmentIndIcon from "@mui/icons-material/AssignmentInd";
+import CameraAltIcon from "@mui/icons-material/CameraAlt";
+import IconButton from "@mui/material/IconButton";
 
 import {
   FIELD_REQUIRED_MESSAGE,
@@ -107,23 +108,27 @@ function AccountTab() {
           gap: 3,
         }}>
         <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-          <Box>
+          <Box sx={{ position: "relative" }}>
             <Avatar
-              sx={{ width: 84, height: 84, mb: 1 }}
-              alt="TrungQuanDev"
+              sx={{ width: 84, height: 84, mb: 1, border: "4px solid grey" }}
+              alt="namnguyen"
               src={currentUser?.avatar}
             />
-            <Tooltip title="Upload a new image to update your avatar immediately.">
-              <Button
-                component="label"
-                variant="contained"
-                size="small"
-                startIcon={<CloudUploadIcon />}>
-                Upload
-                {/* Ẩn input type file mặc định từ trình duyệt */}
-                <VisuallyHiddenInput type="file" onChange={uploadAvatar} />
-              </Button>
-            </Tooltip>
+            <Box sx={{ position: "absolute", right: "-12px", bottom: "1%" }}>
+              <Tooltip title="Upload a new image to update your avatar immediately.">
+                <IconButton
+                  component="label"
+                  size="small"
+                  sx={{
+                    p: "2px",
+                  }}>
+                  <CameraAltIcon />
+                  {/* Ẩn input type file mặc định từ trình duyệt */}
+                  <VisuallyHiddenInput type="file" onChange={uploadAvatar} />
+                </IconButton>
+              </Tooltip>
+            </Box>
+            {/*  */}
           </Box>
           <Box>
             <Typography variant="h6">{currentUser?.displayName}</Typography>

@@ -12,6 +12,9 @@ import PtolloIcon from "~/assets/ptollo.svg?react";
 import Divider from "@mui/material/Divider";
 import GoogleIcon from "@mui/icons-material/Google";
 import FacebookIcon from "@mui/icons-material/Facebook";
+import IconButton from "@mui/material/IconButton";
+import VisibilityOutlinedIcon from "@mui/icons-material/VisibilityOutlined";
+import VisibilityOffOutlinedIcon from "@mui/icons-material/VisibilityOffOutlined";
 import { useForm } from "react-hook-form";
 import {
   EMAIL_RULE,
@@ -24,6 +27,7 @@ import {
 import FieldErrorAlert from "~/components/Form/FieldErrorAlert";
 import { registerUserAPI } from "~/apis";
 import { toast } from "react-toastify";
+import { useState } from "react";
 
 function RegisterForm() {
   const {
@@ -33,7 +37,8 @@ function RegisterForm() {
     watch,
   } = useForm();
   const navigate = useNavigate();
-
+  const [showPassword, setShowPassword] = useState(false);
+  const [showPasswordConf, setshowPasswordConf] = useState(false);
   const submitRegister = (data) => {
     const { email, password } = data;
     toast
@@ -104,37 +109,69 @@ function RegisterForm() {
               <FieldErrorAlert errors={errors} fieldName={"email"} />
             </Box>
             <Box sx={{ marginTop: "1em" }}>
-              <TextField
-                fullWidth
-                label="Enter Password..."
-                type="password"
-                variant="outlined"
-                error={!!errors["password"]}
-                {...register("password", {
-                  required: FIELD_REQUIRED_MESSAGE,
-                  pattern: {
-                    value: PASSWORD_RULE,
-                    message: PASSWORD_RULE_MESSAGE,
-                  },
-                })}
-              />
+              <Box sx={{ position: "relative" }}>
+                <TextField
+                  fullWidth
+                  label="Enter Password..."
+                  type={showPassword ? "text" : "password"}
+                  variant="outlined"
+                  error={!!errors["password"]}
+                  {...register("password", {
+                    required: FIELD_REQUIRED_MESSAGE,
+                    pattern: {
+                      value: PASSWORD_RULE,
+                      message: PASSWORD_RULE_MESSAGE,
+                    },
+                  })}
+                />
+                <IconButton
+                  onClick={() => setShowPassword(!showPassword)}
+                  sx={{
+                    position: "absolute",
+                    right: 0,
+                    top: "15%",
+                    color: "white",
+                  }}>
+                  {showPassword ? (
+                    <VisibilityOffOutlinedIcon />
+                  ) : (
+                    <VisibilityOutlinedIcon />
+                  )}
+                </IconButton>
+              </Box>
               <FieldErrorAlert errors={errors} fieldName={"password"} />
             </Box>
             <Box sx={{ marginTop: "1em" }}>
-              <TextField
-                fullWidth
-                label="Enter Password Confirmation..."
-                type="password"
-                variant="outlined"
-                error={!!errors["passwordConfirmation"]}
-                {...register("passwordConfirmation", {
-                  required: FIELD_REQUIRED_MESSAGE,
-                  validate: (value) => {
-                    if (value === watch("password")) return true;
-                    return PASSWORD_CONFIRMATION_MESSAGE;
-                  },
-                })}
-              />
+              <Box sx={{ position: "relative" }}>
+                <TextField
+                  fullWidth
+                  label="Enter Password Confirmation..."
+                  type={showPasswordConf ? "text" : "password"}
+                  variant="outlined"
+                  error={!!errors["passwordConfirmation"]}
+                  {...register("passwordConfirmation", {
+                    required: FIELD_REQUIRED_MESSAGE,
+                    validate: (value) => {
+                      if (value === watch("password")) return true;
+                      return PASSWORD_CONFIRMATION_MESSAGE;
+                    },
+                  })}
+                />
+                <IconButton
+                  onClick={() => setshowPasswordConf(!showPasswordConf)}
+                  sx={{
+                    position: "absolute",
+                    right: 0,
+                    top: "15%",
+                    color: "white",
+                  }}>
+                  {showPasswordConf ? (
+                    <VisibilityOffOutlinedIcon />
+                  ) : (
+                    <VisibilityOutlinedIcon />
+                  )}
+                </IconButton>
+              </Box>
               <FieldErrorAlert
                 errors={errors}
                 fieldName={"passwordConfirmation"}

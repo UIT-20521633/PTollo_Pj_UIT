@@ -1,46 +1,67 @@
-import React from "react";
 import Box from "@mui/material/Box";
 import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import StarBorderRoundedIcon from "@mui/icons-material/StarBorderRounded";
 import StarRoundedIcon from "@mui/icons-material/StarRounded";
-const CardTitle = ({ user = null }) => {
-  const [star, setStar] = React.useState(false);
-  const handelStarStatus = () => {
-    setStar(!star);
+import { useDispatch } from "react-redux";
+import {
+  selectStarredBoards,
+  toggleStarredBoardAPI,
+} from "~/redux/user/userSlice";
+import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+const CardTitle = ({ title, description, boardId, background }) => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const starredBoards = useSelector(selectStarredBoards);
+  const handelStarStatus = (event) => {
+    event.stopPropagation(); // Ngăn không cho sự kiện click ảnh hưởng đến Box cha
+    //Gọi API cập nhật starredBoards
+    dispatch(toggleStarredBoardAPI(boardId));
   };
+  const star = starredBoards.some((board) => board.boardId === boardId);
   return (
     <Box
       sx={{
         display: "flex",
         alignItems: "center",
-        margin: "0px 8px 2px",
+        justifyContent: "space-between",
+        width: "270px",
+        height: "40px",
+      }}
+      onClick={() => {
+        // Chuyển trang khi click vào Card
+        navigate(`/board/${boardId}`);
       }}>
-      <Avatar
-        src="https://picsum.photos/200/300?random=2"
-        variant="rounded"></Avatar>
-      <Box sx={{ ml: 2 }}>
+      <Box sx={{ display: "flex", alignItems: "center" }}>
         <Box
           sx={{
-            fontSize: "14px",
-            fontWeight: "500",
-            maxWidth: "100%",
-            wordWrap: "break-word",
-          }}>
-          Mise-En-Place Personal Productivity System
-        </Box>
-        <Box
-          sx={{
-            fontSize: "12px",
-            fontWeight: "400",
-            lineHeight: "16px",
-            color: "#9FADBC",
-            display: user ? "block" : "none",
-          }}>
-          {user} workspace
+            background: background?.startsWith("#")
+              ? background
+              : `url(${background})`,
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            width: "40px",
+            height: "40px",
+            borderRadius: "10px",
+          }}></Box>
+        <Box sx={{ ml: 2 }}>
+          <Box sx={{ fontSize: "14px", fontWeight: "500" }}>{title}</Box>
+          <Box
+            sx={{
+              fontSize: "12px",
+              fontWeight: "400",
+              lineHeight: "16px",
+              color: "#9FADBC",
+            }}>
+            {description}
+          </Box>
         </Box>
       </Box>
-      <Box sx={{ ml: 1 }}>
+      <Box
+        sx={{ ml: 1 }}
+        // Ngăn chuyển trang khi nhấn vào IconButton
+        onMouseDown={(event) => event.stopPropagation()}>
         <Button onClick={handelStarStatus} sx={{ p: 0, m: 0, minWidth: 0 }}>
           {star ? (
             <StarRoundedIcon sx={{ color: "#e8e809" }} />

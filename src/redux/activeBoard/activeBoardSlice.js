@@ -8,6 +8,7 @@ import { mapOrder } from "~/utils/sorts";
 //Khởi tạo giá trị State của 1 cái slice trong redux
 const initialState = {
   currentActiveBoard: null,
+  completionBoard: null,
 };
 //Các hành động gọi API( bất đồng bộ) và cập nhật dữ liệu vào redux, dùng middleware createAsyncThunk đi kèm với extraReducers
 export const fetchBoardDetailsAPI = createAsyncThunk(
@@ -17,6 +18,15 @@ export const fetchBoardDetailsAPI = createAsyncThunk(
       `${API_ROOT}/v1/boards/${boardId}`
     );
     //Lưu ý: axios sẽ trả về kết quả về qua property của nó là data
+    return response.data;
+  }
+);
+export const fetchCompletionBoardAPI = createAsyncThunk(
+  "activeBoard/fetchCompletionBoardAPI",
+  async (boardId) => {
+    const response = await authorizedAxiosInstance.get(
+      `${API_ROOT}/v1/boards/${boardId}/completion-board`
+    );
     return response.data;
   }
 );
@@ -62,6 +72,9 @@ export const activeBoardSlice = createSlice({
         }
       }
     },
+    setCompletionBoard: (state, action) => {
+      state.completionBoard = action.payload;
+    },
   },
   //ExtraReducers: Nơi xử lý dữ liệu bất đồng bộ
   extraReducers: (builder) => {
@@ -90,6 +103,10 @@ export const activeBoardSlice = createSlice({
       //Update lại data của cái currentActiveBoard
       state.currentActiveBoard = board; //nó tương tự như setState trong React
     });
+    //sẽ hứng data trả về từ fetchCompletionBoardAPI và xử lý dữ liệu ở đây
+    builder.addCase(fetchCompletionBoardAPI.fulfilled, (state, action) => {
+      state.completionBoard = action.payload;
+    });
   },
 });
 //Actions: là nơi dành cho các component bên dưới gọi bằng dispatch() tới nó để cập nhật dữ liệu thông qua reducer (chạy đồng bộ)(câp nhật dữ liệu trong store)
@@ -100,6 +117,9 @@ export const { updateCurrentActiveBoard, updateCardInBoard } =
 //Selectors: là nơi dành cho các component bên dưới gọi bằng useSelector() để lấy dữ liệu từ store ra sử dụng (lấy dữ liệu từ store ra bên ngoài)
 export const selectCurrentActiveBoard = (state) => {
   return state.activeBoard.currentActiveBoard;
+};
+export const selectCompletionBoard = (state) => {
+  return state.activeBoard.completionBoard;
 };
 
 //Cái file này tên là activeBoardSlice, nhưng ta sẽ export ra 1 cái tên là Reducer để import vào rootReducer

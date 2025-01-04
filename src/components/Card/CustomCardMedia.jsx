@@ -5,44 +5,67 @@ import Typography from "@mui/material/Typography";
 import Avatar from "@mui/material/Avatar";
 import Box from "@mui/material/Box";
 import CardActionArea from "@mui/material/CardActionArea";
-const CustomCardMedia = () => {
+import Button from "@mui/material/Button";
+
+const CustomCardMedia = ({ template, onUseTemplate, onShareTemplate }) => {
   return (
     <Card sx={{ minWidth: 200, position: "relative" }}>
       <CardActionArea>
         <CardMedia
           sx={{ height: 132 }}
-          image="https://mui.com/static/images/cards/contemplative-reptile.jpg"
-          title="green iguana"
+          image={
+            template?.background ||
+            "https://mui.com/static/images/cards/contemplative-reptile.jpg"
+          }
+          title={template?.title}
         />
         <Box
           sx={{
             display: "flex",
             justifyContent: "start",
             position: "relative",
-            ml: 2, // Adds some space between avatar and text
-            top: -26, // This positions the avatar halfway between image and text
-            zIndex: 1, // Ensures avatar is on top
+            ml: 2,
+            top: -26,
+            zIndex: 1,
           }}>
           <Avatar
-            alt="Remy Sharp"
-            src="https://mui.com/static/images/avatar/1.jpg"
+            alt={template?.creator || "Template Creator"}
+            src="https://mui.com/static/images/avatar/1.jpg" // Thay bằng ảnh người tạo template (nếu có)
             sx={{
               width: 53,
               height: 53,
-              border: "3px solid white", // Adds a border for better visual separation
+              border: "3px solid white",
             }}
           />
         </Box>
         <CardContent sx={{ pt: 0.1 }}>
-          <Typography gutterBottom variant="h7" component="div">
-            Lizard
+          <Typography gutterBottom variant="h6" component="div">
+            {template?.title}
           </Typography>
           <Typography variant="body2" sx={{ color: "text.secondary" }}>
-            Lizards are a widespread group of squamate reptiles, with over 6,000
-            species, ranging across all continents except Antarctica
+            {template?.description || "No description available"}
           </Typography>
         </CardContent>
       </CardActionArea>
+      <Box sx={{ p: 2, display: "flex", justifyContent: "space-between" }}>
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={() => onUseTemplate(template)}>
+          Use Template
+        </Button>
+        <Button
+          variant="outlined"
+          onClick={() => {
+            onShareTemplate(template);
+            navigator.clipboard.writeText(
+              `${window.location.origin}/templates/${template._id}`
+            );
+            alert("Template link copied to clipboard!");
+          }}>
+          Share
+        </Button>
+      </Box>
     </Card>
   );
 };

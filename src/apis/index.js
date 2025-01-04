@@ -34,6 +34,7 @@ export const fetchBoardsAPI = async (searchPath) => {
   );
   return response.data;
 };
+
 export const createNewBoardAPI = async (newBoardData) => {
   const response = await authorizedAxiosInstance.post(
     `${API_ROOT}/v1/boards`,
@@ -73,6 +74,23 @@ export const createNewCardAPI = async (newCardData) => {
   );
   return response.data;
 };
+export const deleteAttachmentAPI = async (cardId, publicId) => {
+  const response = await authorizedAxiosInstance.post(
+    `${API_ROOT}/v1/cards/${cardId}/delete-attachment`,
+    { publicId }
+  );
+  return response.data;
+};
+export const renameAttachmentAPI = async (cardId, publicId, newName) => {
+  const response = await authorizedAxiosInstance.put(
+    `${API_ROOT}/v1/cards/${cardId}/rename-attachment`,
+    {
+      publicId,
+      newName,
+    }
+  );
+  return response.data;
+};
 export const updateCardDetailsAPI = async (cardId, updateCardData) => {
   const response = await authorizedAxiosInstance.put(
     `${API_ROOT}/v1/cards/${cardId}`,
@@ -80,7 +98,13 @@ export const updateCardDetailsAPI = async (cardId, updateCardData) => {
   );
   return response.data;
 };
-
+export const uploadAttachmentAPI = async (cardId, attachmentData) => {
+  const response = await authorizedAxiosInstance.post(
+    `${API_ROOT}/v1/cards/${cardId}`,
+    attachmentData
+  );
+  return response.data;
+};
 /** Users */
 export const registerUserAPI = async (data) => {
   const response = await authorizedAxiosInstance.post(
@@ -133,16 +157,99 @@ export const createNewCallAPI = async (newCallData) => {
 export const joinRoomCallAPI = async (newCallData) => {
   const response = await authorizedAxiosInstance.post(
     `${API_ROOT}/v1/calls/join-room`,
+
     newCallData
   );
   toast.success("Call group joined successfully!");
   return response.data;
 };
-export const broadcastRoomIdToUsers = async (data) => {
+export const sendNotificationJoinRoomAPI = async (data) => {
   const response = await authorizedAxiosInstance.post(
-    `${API_ROOT}/v1/calls/broadcast-room-id`,
+    `${API_ROOT}/v1/calls/send-room`,
     data
   );
-  toast.success("Room ID broadcasted successfully!");
+  return response.data;
+};
+export const sendNotificationDeadlineAPI = async (data) => {
+  const response = await authorizedAxiosInstance.post(`${API_ROOT}/v1/`, data);
+  return response.data;
+};
+export const saveDeadlineAPI = async (cardId, data) => {
+  console.log(data);
+  const response = await authorizedAxiosInstance.post(
+    `${API_ROOT}/v1/cards/${cardId}/deadline`,
+    data
+  );
+  return response.data;
+};
+//Gallery API
+export const getImagesAPI = async () => {
+  const response = await authorizedAxiosInstance.get(
+    `${API_ROOT}/v1/gallery/unsplash-gallery`
+    // {
+    //   params: {
+    //     query: "nature",
+    //   },
+    // }
+  );
+  return response.data;
+};
+export const searchImagesAPI = async (query) => {
+  const response = await authorizedAxiosInstance.get(
+    `${API_ROOT}/v1/gallery/unsplash-search`,
+    {
+      params: {
+        query: query,
+      },
+    }
+  );
+  return response.data;
+};
+export const uploadBackgroundBoardAPI = async (formData, boardId) => {
+  const response = await authorizedAxiosInstance.put(
+    `${API_ROOT}/v1/boards/${boardId}/upload-image`,
+    formData
+  );
+  return response.data;
+};
+export const getBackgroundBoardAPI = async (boardId, background) => {
+  const response = await authorizedAxiosInstance.put(
+    `${API_ROOT}/v1/boards/${boardId}/background`,
+    { background }
+  );
+  return response.data;
+};
+//Template API
+export const fetchTemplatesAPI = async () => {
+  const response = await authorizedAxiosInstance.get(
+    `${API_ROOT}/v1/templates`
+  );
+  return response.data;
+};
+export const createNewTemplateAPI = async (newTemplateData) => {
+  const response = await authorizedAxiosInstance.post(
+    `${API_ROOT}/v1/templates`,
+    newTemplateData
+  );
+  toast.success("Template created successfully!");
+  return response.data;
+};
+export const updateTemplateAPI = async (templateId, updateTemplateData) => {
+  const response = await authorizedAxiosInstance.put(
+    `${API_ROOT}/v1/templates/${templateId}`,
+    updateTemplateData
+  );
+  return response.data;
+};
+export const deleteTemplateAPI = async (templateId) => {
+  const response = await authorizedAxiosInstance.delete(
+    `${API_ROOT}/v1/templates/${templateId}`
+  );
+  return response.data;
+};
+export const fetchTemplateDetailsAPI = async (templateId) => {
+  const response = await authorizedAxiosInstance.get(
+    `${API_ROOT}/v1/templates/${templateId}`
+  );
   return response.data;
 };

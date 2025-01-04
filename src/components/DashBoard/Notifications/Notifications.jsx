@@ -19,13 +19,14 @@ import {
   selectCurrentNotifications,
   updateBoardInvitationAPI,
   addNotification,
+  fetchInvitationsRoomAPI,
 } from "~/redux/notifications/notificationsSlice";
 import { socketIoInstance } from "~/socketClient";
 import { selectCurrentUser } from "~/redux/user/userSlice";
 import { useNavigate } from "react-router-dom";
-import { joinRoomCallAPI } from "~/apis";
 import { setCallInfo } from "~/redux/activieCall/callSlice";
 import { toast } from "react-toastify";
+import { joinRoomCallAPI } from "~/apis";
 
 const BOARD_INVITATION_STATUS = {
   PENDING: "PENDING",
@@ -80,37 +81,32 @@ function Notifications() {
         setNewNotification(true);
       }
     };
-    // Lắng nghe sự kiện từ backend
-    const onReceiveRoomIdNotification = (data) => {
-      console.log("Received data from server:", data);
-      if (data?.userId === currentUser._id) {
-        if (data?.roomId) {
-          // Thêm thông báo vào Redux store hoặc hiển thị ngay trong UI
-          const roomNotification = {
-            inviter: { displayName: "System" },
-            board: { title: "Group Call Room" },
-            roomId: data.roomId,
-            createdAt: new Date().toISOString(),
-          };
-
-          dispatch(addNotification(roomNotification)); // Lưu thông báo vào Redux
-          setNewNotification(true); // Đánh dấu có thông báo mới
-        }
-      }
-    };
     //Lắng nghe 1 cái event realtime có tên là BE_USER_INVITED_TO_BOARD từ server gửi về
     socketIoInstance.on("BE_USER_INVITED_TO_BOARD", onReceiveNewInvitation);
-    socketIoInstance.on("BE_SEND_ROOMID_TO_USERS", onReceiveRoomIdNotification);
-
     // clean up sự kiện để ngăn chặn việc bị đăng ký lặp lại sự kiện khi component bị render lại
     return () => {
       socketIoInstance.off("BE_USER_INVITED_TO_BOARD", onReceiveNewInvitation);
-      socketIoInstance.off(
-        "BE_SEND_ROOMID_TO_USERS",
-        onReceiveRoomIdNotification
-      );
     };
   }, [dispatch, currentUser._id]); //dispatch là một dependency của useEffect nên phải để vào mảng dependency để useEffect chạy lại khi dispatch thay đổi giá trị nghĩa là khi fetchInvitationsAPI() được gọi thì useEffect sẽ chạy lại để lấy dữ liệu mới từ redux store và hiển thị lên giao diện người dùng thông qua notifications ở trên giao diện người dùng sẽ hiển thị thông báo mời tham gia board
+  useEffect(() => {
+    dispatch(fetchInvitationsRoomAPI());
+    // Lắng nghe sự kiện từ backend
+    const onReceiveRoomIdNotification = (data) => {
+      const filteredNotification = data.filter(
+        (item) => item.inviteeId === currentUser._id
+      );
+      const notification = filteredNotification[0];
+      if (!notification) return;
+      dispatch(addNotification(notification));
+      setNewNotification(true);
+    };
+    //Lắng nghe 1 cái event realtime có tên là BE_USER_INVITED_TO_BOARD từ server gửi về
+    socketIoInstance.on("inviteToRoom", onReceiveRoomIdNotification);
+    // clean up sự kiện để ngăn chặn việc bị đăng ký lặp lại sự kiện khi component bị render lại
+    return () => {
+      socketIoInstance.off("inviteToRoom", onReceiveRoomIdNotification);
+    };
+  }, [dispatch, currentUser._id]);
 
   //Cập nhật trạng thái - status của 1 lời mời join board
   const updateBoardInvitation = (status, invitationId) => {
@@ -118,15 +114,20 @@ function Notifications() {
     // console.log("invitationId: ", invitationId);
     dispatch(updateBoardInvitationAPI({ status, invitationId })).then((res) => {
       if (
-        res.payload.boardInvitation.status === BOARD_INVITATION_STATUS.ACCEPTED
+        res.payload?.boardInvitation?.status ===
+        BOARD_INVITATION_STATUS.ACCEPTED
       ) {
         navigate(`/board/${res.payload.boardInvitation.boardId}`);
+      } else if (
+        res.payload?.roomInvitation?.status === JOIN_ROOM_STATUS.ACCEPTED
+      ) {
+        dispatch(setCallInfo({ roomId: res.payload.roomInvitation.roomId }));
+        handleJoinRoom(res.payload.roomInvitation.roomId);
       }
     });
   };
-  // console.log(newNotification);
 
-  // Function to join a room
+  //Function to join a room
   const handleJoinRoom = async (roomId) => {
     if (loading) return;
     setLoading(true); // Set loading state to true
@@ -205,27 +206,20 @@ function Notifications() {
                     <GroupAddIcon fontSize="small" />
                   </Box>
                   <Box>
-                    <strong>{notifications.inviter.displayName}</strong>{" "}
-                    {notifications.roomId
+                    <strong>{notifications?.inviter?.displayName}</strong>{" "}
+                    {notifications.type === "ROOM_INVITATION"
                       ? "had invited you to join the group call room "
                       : "had invited you to join the board "}
-                    <strong>{notifications.board.title}</strong>
+                    <strong>{notifications?.board?.title}</strong>
                   </Box>
                 </Box>
                 {/* Hiển thị roomid nếu có */}
-                {notifications.roomId && (
+                {notifications.roomInvitation?.roomId && (
                   <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
                     <Typography variant="body2">
-                      Room ID: <strong>{notifications.roomId}</strong>
+                      Room ID:{" "}
+                      <strong>{notifications.roomInvitation.roomId}</strong>
                     </Typography>
-                    {/* Button để tham gia room */}
-                    <Button
-                      variant="contained"
-                      color="primary"
-                      size="small"
-                      onClick={() => handleJoinRoom(notifications.roomId)}>
-                      Join Room
-                    </Button>
                   </Box>
                 )}
                 {/* Khi Status của thông báo này là PENDING thì sẽ hiện 2 Button */}
@@ -268,6 +262,45 @@ function Notifications() {
                     </Button>
                   </Box>
                 )}
+                {notifications.roomInvitation?.status ===
+                  JOIN_ROOM_STATUS.PENDING && (
+                  <Box
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 1,
+                      justifyContent: "flex-end",
+                    }}>
+                    <Button
+                      className="interceptor-loading"
+                      type="submit"
+                      variant="contained"
+                      color="success"
+                      size="small"
+                      onClick={() =>
+                        updateBoardInvitation(
+                          JOIN_ROOM_STATUS.ACCEPTED,
+                          notifications._id
+                        )
+                      }>
+                      Accept
+                    </Button>
+                    <Button
+                      className="interceptor-loading"
+                      type="submit"
+                      variant="contained"
+                      color="secondary"
+                      size="small"
+                      onClick={() =>
+                        updateBoardInvitation(
+                          JOIN_ROOM_STATUS.REJECTED,
+                          notifications._id
+                        )
+                      }>
+                      Reject
+                    </Button>
+                  </Box>
+                )}
                 {/* Khi Status của thông báo này là ACCEPTED hoặc REJECTED thì sẽ hiện thông tin đó lên */}
 
                 <Box
@@ -288,6 +321,24 @@ function Notifications() {
                   )}
                   {notifications.boardInvitation?.status ===
                     BOARD_INVITATION_STATUS.REJECTED && (
+                    <Chip
+                      icon={<NotInterestedIcon />}
+                      label="Rejected"
+                      color="error"
+                      size="small"
+                    />
+                  )}
+                  {notifications.roomInvitation?.status ===
+                    JOIN_ROOM_STATUS.ACCEPTED && (
+                    <Chip
+                      icon={<DoneIcon />}
+                      label="Accepted"
+                      color="success"
+                      size="small"
+                    />
+                  )}
+                  {notifications.roomInvitation?.status ===
+                    JOIN_ROOM_STATUS.REJECTED && (
                     <Chip
                       icon={<NotInterestedIcon />}
                       label="Rejected"

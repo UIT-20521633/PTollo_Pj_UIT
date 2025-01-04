@@ -30,8 +30,8 @@ const theme = createTheme({
       styleOverrides: {
         body: {
           "*::-webkit-scrollbar": {
-            width: "8px",
-            height: "8px",
+            width: "3px",
+            height: "3px",
           },
           "*::-webkit-scrollbar-thumb": {
             backgroundColor: "#bdc3c7",
@@ -104,6 +104,9 @@ const theme = createTheme({
           active: "#303C4F",
         },
         icon: "#9FADBC",
+        chatButtonHover: "#cfd8dc",
+        chatButton: "#cfd8dc",
+        borderColor: "#263238",
       },
     },
     dark: {
@@ -125,6 +128,9 @@ const theme = createTheme({
           active: "#D4E0EC",
         },
         icon: "#172B4D",
+        chatButton: "#263238",
+        chatButtonHover: "#37474f",
+        borderColor: "#e0e0e0",
       },
     },
   },
