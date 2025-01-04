@@ -6,7 +6,7 @@ import { AppProvider } from "@toolpad/core/AppProvider";
 import { DashboardLayout } from "@toolpad/core/DashboardLayout";
 import IconButton from "@mui/material/IconButton";
 import Tooltip from "@mui/material/Tooltip";
-import "./DashBoard.css";
+import "../../../src/components/DashBoard/DashBoard.css";
 import Stack from "@mui/material/Stack";
 import Recent from "./Recent/Recent";
 import Starred from "./Starred/Starred";
@@ -339,7 +339,6 @@ const DashBoard = ({ hideNav }) => {
         hideNavigation={hideNav}
         slots={{
           toolbarActions: ToolbarActions,
-          sidebarFooter: SidebarFooterAccount,
         }}>
         {/* <DemoPageContent pathname={"/boar"} /> */}
         {/* Phần chính của Dashboard */}
