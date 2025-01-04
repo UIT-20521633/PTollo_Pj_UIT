@@ -4,7 +4,7 @@ import LoginForm from "./LoginForm";
 import RegisterForm from "./RegisterForm";
 import { useSelector } from "react-redux";
 import { selectCurrentUser } from "~/redux/user/userSlice";
-
+import backgroundImage from "../../../src/assets/img/Landingpage_img/background.jpg";
 function Auth() {
   const location = useLocation();
   //location.pathname: lấy ra đường dẫn hiện tại
@@ -26,8 +26,7 @@ function Auth() {
         minHeight: "100vh",
         alignItems: "center",
         justifyContent: "flex-start",
-        backgroundImage:
-          "url(../src/assets/img/Landingpage_img/background.jpg)",
+        background: `url(${backgroundImage})`,
         backgroundRepeat: "no-repeat",
         backgroundSize: "cover",
         backgroundPosition: "center",
