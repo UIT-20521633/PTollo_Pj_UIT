@@ -17,6 +17,7 @@ const HomePage = () => {
           display: "flex",
           alignItems: "center",
           ml: 2,
+          mt: 2,
         }}>
         <TaskAltIcon sx={{ mr: 1.5 }} />
         <Typography variant="h6">Your Items</Typography>

@@ -14,7 +14,6 @@ import theme from "~/theme";
 import ViewListOutlinedIcon from "@mui/icons-material/ViewListOutlined";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import CardYourBoard from "~/components/Card/CardYourBoard";
-import SidebarCreateBoardModal from "~/pages/Boards/create";
 
 export const NAVIGATION_MAIN = [
   {
