@@ -163,7 +163,7 @@ const DashBoard = ({ hideNav }) => {
                     cursor: "pointer",
                   }}>
                   <img
-                    src="../../../public/icons/icon.png"
+                    src="icons/icon.png"
                     alt="PTollo Logo"
                     style={{ width: "60px", height: "60px" }}
                   />
