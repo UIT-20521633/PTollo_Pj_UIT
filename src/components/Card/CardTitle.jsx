@@ -1,5 +1,4 @@
 import Box from "@mui/material/Box";
-import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import StarBorderRoundedIcon from "@mui/icons-material/StarBorderRounded";
 import StarRoundedIcon from "@mui/icons-material/StarRounded";

@@ -26,7 +26,8 @@ function Auth() {
         minHeight: "100vh",
         alignItems: "center",
         justifyContent: "flex-start",
-        background: 'url("src/assets/img/Landingpage_img/background.jpg")',
+        backgroundImage:
+          "url(../src/assets/img/Landingpage_img/background.jpg)",
         backgroundRepeat: "no-repeat",
         backgroundSize: "cover",
         backgroundPosition: "center",

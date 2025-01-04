@@ -327,7 +327,7 @@ const DashBoard = ({ hideNav }) => {
         title: " ",
         logo: (
           <img
-            src="../../../public/icons/icon.png"
+            src="icons/icon.png"
             alt="logo"
             style={{ maxHeight: "60px", cursor: "pointer" }}
           />
