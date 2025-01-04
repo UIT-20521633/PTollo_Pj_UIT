@@ -30,7 +30,7 @@ const CardTitle = ({ title, description, boardId, background }) => {
       }}
       onClick={() => {
         // Chuyển trang khi click vào Card
-        navigate(`/board/${boardId}`);
+        navigate(`/boards/${boardId}`);
       }}>
       <Box sx={{ display: "flex", alignItems: "center" }}>
         <Box

@@ -73,7 +73,7 @@ function AppRoutes() {
           <Route path="/templates/:id" element={<TemplateDetail />} />
           <Route path="/home" element={<HomePage />} />
           {/* Board Detail */}
-          <Route path="/board/:boardId" element={<BoardPage />} />
+          <Route path="/boards/:boardId" element={<BoardPage />} />
           <Route path="/boards" element={<Boards />} />
           {/* User Setting */}
           <Route path="/settings/account" element={<Settings />} />

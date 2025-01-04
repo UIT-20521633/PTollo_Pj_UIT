@@ -61,7 +61,7 @@ function AutoCompleteSearchBoard() {
     // Phải kiểm tra nếu tồn tại một cái board cụ thể được select thì mới gọi điều hướng - navigate
     // console.log(selectedBoard)
     if (selectedBoard) {
-      navigate(`/board/${selectedBoard._id}`);
+      navigate(`/boards/${selectedBoard._id}`);
     }
   };
 

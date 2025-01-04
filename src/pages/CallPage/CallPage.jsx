@@ -151,7 +151,7 @@ function CallPage() {
     if (zpRef.current) {
       zpRef.current.destroy(); // Clean up the Zego instance
     }
-    navigate(`/board/${currentBoard._id}`); // Navigate to board page
+    navigate(`/boards/${currentBoard._id}`); // Navigate to board page
   };
 
   // On component mount, extract call type from location and initialize the meeting

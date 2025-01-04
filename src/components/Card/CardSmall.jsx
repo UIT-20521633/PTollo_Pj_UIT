@@ -38,7 +38,7 @@ const CardSmall = ({ title, description, boardId, background }) => {
       onMouseLeave={() => setIsHovered(false)} // Ẩn icon nếu chưa bấm
       onClick={() => {
         // Chuyển trang khi click vào Card
-        navigate(`/board/${boardId}`);
+        navigate(`/boards/${boardId}`);
       }}>
       <Box sx={{ display: "flex", alignItems: "center" }}>
         <Box

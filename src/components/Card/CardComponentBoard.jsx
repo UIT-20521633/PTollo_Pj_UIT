@@ -110,7 +110,7 @@ const CardComponentBoard = ({ title, description, boardId, background }) => {
           )}
           <Box
             component={Link}
-            to={`/board/${boardId}`}
+            to={`/boards/${boardId}`}
             sx={{
               mt: 1,
               display: "flex",

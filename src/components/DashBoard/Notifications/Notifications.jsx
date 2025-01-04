@@ -117,7 +117,7 @@ function Notifications() {
         res.payload?.boardInvitation?.status ===
         BOARD_INVITATION_STATUS.ACCEPTED
       ) {
-        navigate(`/board/${res.payload.boardInvitation.boardId}`);
+        navigate(`/boards/${res.payload.boardInvitation.boardId}`);
       } else if (
         res.payload?.roomInvitation?.status === JOIN_ROOM_STATUS.ACCEPTED
       ) {
