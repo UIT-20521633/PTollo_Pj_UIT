@@ -120,8 +120,8 @@ function Boards() {
                   <Grid xs={2} sm={3} md={4} key={b.boardId}>
                     <CardComponentBoard
                       boardId={b.boardId}
-                      title={b.title}
-                      description={b.description}
+                      title={b.board?.title}
+                      description={b.board?.description}
                       background={b.board?.background}
                     />
                   </Grid>

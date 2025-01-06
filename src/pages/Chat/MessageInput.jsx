@@ -2,20 +2,19 @@ import { useState, useRef } from "react";
 import "~/index.css";
 import { Image, Send, X } from "lucide-react";
 import Box from "@mui/material/Box";
-import Button from "@mui/material/Button";
 import IconButton from "@mui/material/IconButton";
 import TextField from "@mui/material/TextField";
-import SendIcon from "@mui/icons-material/Send";
 import { toast } from "react-toastify";
 import { useDispatch, useSelector } from "react-redux";
 import { selectSelectedUser, sendMessage } from "~/redux/Chats/chatSlice";
+import { selectCurrentActiveBoard } from "~/redux/activeBoard/activeBoardSlice";
 
 const MessageInput = () => {
   const [text, setText] = useState("");
   const [imagePreview, setimagePreview] = useState(null);
   const fileInputRef = useRef(null);
   const dispatch = useDispatch();
-  const selectUser = useSelector(selectSelectedUser);
+  const currentBoard = useSelector(selectCurrentActiveBoard);
 
   const handleImgChange = (e) => {
     // Xử lý khi chọn ảnh từ máy
@@ -56,13 +55,15 @@ const MessageInput = () => {
     }
 
     let reqData = new FormData();
-    reqData.append("text", text.trim()); // Luôn thêm text vào FormData
-
+    if (text.trim()) {
+      reqData.append("text", text.trim()); // Luôn thêm text vào FormData
+    }
     // Nếu có ảnh, thêm ảnh vào FormData
     if (fileInputRef.current?.files[0]) {
       reqData.append("image", fileInputRef.current.files[0]);
     }
-
+    //Gửi tin nhắn kèm boardId
+    reqData.append("boardId", currentBoard._id);
     try {
       dispatch(sendMessage(reqData));
       // Xóa input sau khi gửi

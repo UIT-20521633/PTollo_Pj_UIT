@@ -1,5 +1,6 @@
 import React, { useEffect } from "react";
 import Box from "@mui/material/Box";
+import Badge from "@mui/material/Badge";
 import SpeedDial from "@mui/material/SpeedDial";
 import SpeedDialIcon from "@mui/material/SpeedDialIcon";
 import SpeedDialAction from "@mui/material/SpeedDialAction";
@@ -20,7 +21,6 @@ const FABMessage = ({ board }) => {
   const [activeModal, setActiveModal] = React.useState(null); // 'chat' | 'completed' | null
   const selectUser = useSelector(selectSelectedUser); // Lấy thông tin user đang được chọn
   const dispatch = useDispatch();
-
   useEffect(() => {
     dispatch(fetchCompletionBoardAPI(board._id));
   }, [dispatch, board._id]);
@@ -29,7 +29,9 @@ const FABMessage = ({ board }) => {
 
   const openModal = (type) => setActiveModal(type);
   const closeModal = () => setActiveModal(null);
-
+  const handleOpenChat = () => {
+    setActiveModal("chat");
+  };
   return (
     <Box>
       {/* SpeedDial for actions */}
@@ -43,7 +45,7 @@ const FABMessage = ({ board }) => {
             key="Open Chat"
             icon={<MessageRoundedIcon sx={{ fontSize: 30 }} />}
             tooltipTitle="Open Chat"
-            onClick={() => openModal("chat")}
+            onClick={handleOpenChat}
             sx={{
               width: 55,
               height: 55,

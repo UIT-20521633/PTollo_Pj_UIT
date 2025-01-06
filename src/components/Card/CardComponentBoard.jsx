@@ -48,7 +48,17 @@ const CardComponentBoard = ({ title, description, boardId, background }) => {
         </Box>
       )}
       <CardContent sx={{ p: 1.5, "&:last-child": { p: 1.5 } }}>
-        <Typography gutterBottom variant="h6" component="div">
+        {/* nếu title có width lớn hơn 206 thì hiển thị ... ở cuối title */}
+        <Typography
+          gutterBottom
+          variant="h6"
+          component="div"
+          sx={{
+            overflow: "hidden",
+            whiteSpace: "nowrap",
+            textOverflow: "ellipsis",
+            width: "100%",
+          }}>
           {title}
         </Typography>
         <Typography

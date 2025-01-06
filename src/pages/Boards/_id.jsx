@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import BoardBar from "./BoardBar/BoardBar";
 import BoardContent from "./BoardContent/BoardContent";
 import Box from "@mui/material/Box";
@@ -8,7 +8,6 @@ import {
   updateBoardDetailsAPI,
   updateColumnDetailsAPI,
   moveCardToDifferentColumnAPI,
-  getBackgroundBoardAPI,
 } from "~/apis";
 import { cloneDeep } from "lodash";
 import {
@@ -16,6 +15,7 @@ import {
   updateCurrentActiveBoard,
   selectCurrentActiveBoard,
   fetchCompletionBoardAPI,
+  resetActiveBoard,
 } from "~/redux/activeBoard/activeBoardSlice";
 import { useDispatch, useSelector } from "react-redux";
 //useSelector: là hook của react-redux giúp lấy dữ liệu từ store nó gióng như mapStateToProps trong class component của react-redux trước đây (lấy dữ liệu từ store) có tác dụng lấy dữ liệu từ store
@@ -23,28 +23,47 @@ import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import PageLoadingSpinner from "~/components/Loading/PageLoadingSpinner";
 import ActiveCard from "~/components/Modal/ActiveCard/ActiveCard";
-import { updateRecentlyViewedBoardsAPI } from "~/redux/user/userSlice";
+import {
+  fetchStarredBoardsAPI,
+  updateRecentlyViewedBoardsAPI,
+} from "~/redux/user/userSlice";
 import FABMessage from "~/components/FABMessage/FABMessage";
 
 const BoardPage = () => {
   const dispatch = useDispatch();
   //không dùng state của react nữa mà dùng state của redux
   // const [board, setBoard] = useState(null);
-  //Lấy dữ liệu từ store
-  const board = useSelector(selectCurrentActiveBoard);
   //Lấy id từ url
   const { boardId } = useParams();
-
+  //Lấy dữ liệu từ store
+  const board = useSelector(selectCurrentActiveBoard);
+  const [loading, setLoading] = useState(false);
   useEffect(() => {
     //Call API
     // Gọi API lấy dữ liệu board từ BE và sẽ cập nhật dữ liệu vào store thông qua action fetchBoardDetailsAPI và reducer của nó là extraReducers của slice activeBoardSlice (đã import ở trên) (bất đồng bộ)
     //fetchBoardDetailsAPI(boardID) là 1 action được tạo ra từ createAsyncThunk là middleware của redux toolkit giúp chúng ta gọi API và cập nhật dữ liệu vào store
     //dispatch(fetchBoardDetailsAPI(boardID)) là cách gọi action để gọi API và cập nhật dữ liệu vào store cần phải có dispatch
-    dispatch(fetchBoardDetailsAPI(boardId));
+    const loadBoard = async () => {
+      // Reset dữ liệu board cũ
+      dispatch(resetActiveBoard());
+      setLoading(true);
+      try {
+        await dispatch(fetchBoardDetailsAPI(boardId));
+      } catch (error) {
+        console.error("Error loading board:", error);
+      } finally {
+        setLoading(false); // Dừng trạng thái loading
+      }
+    };
+
+    loadBoard();
     //Khi truy cập vào board thì gửi request lên server thông báo đã truy cập vào board này để lưu vào recentlyViewedBoards
+  }, [dispatch, boardId]);
+  useEffect(() => {
     dispatch(updateRecentlyViewedBoardsAPI(boardId)); //Gọi API update lại recentlyViewedBoards
     dispatch(fetchCompletionBoardAPI(boardId));
-  }, [dispatch, boardId]);
+    dispatch(fetchStarredBoardsAPI());
+  }, [boardId, dispatch]);
   //Func có nhiệm vụ gọi API và xử lý kéo thả column xong xuoi
   const moveColumns = (dndSortedColumns) => {
     //dnbSortedColumnsIds là mảng các _id của các column sau khi đã sắp xếp
@@ -134,10 +153,11 @@ const BoardPage = () => {
     });
   };
 
-  if (!board) {
+  if (!board || loading) {
     return <PageLoadingSpinner caption="Loading Board..." />;
   }
-
+  console.log("BoardPageID", board._id);
+  console.log("boardId", boardId);
   return (
     <>
       {/* Modal Active Card, check đóng/mở dựa theo cái State isShowActiveCard lưu tròng redux  */}

@@ -19,9 +19,13 @@ import {
   selectStarredBoards,
   toggleStarredBoardAPI,
 } from "~/redux/user/userSlice";
-import { getBackgroundBoardAPI } from "~/apis";
+import { getBackgroundBoardAPI, updateBoardDetailsAPI } from "~/apis";
 import { updateCurrentActiveBoard } from "~/redux/activeBoard/activeBoardSlice";
 import BackgroundSelector from "~/components/BackgroundSelector/BackgroundSelector";
+import ToggleFocusInput from "~/components/Form/ToggleFocusInput";
+import { cloneDeep } from "lodash";
+import ToggleFocusInputBoard from "~/components/Form/ToggleFocusInputBoard";
+import { useEffect } from "react";
 
 const MENU_STYLE = {
   backgroundColor: theme.palette.primary.main,
@@ -54,6 +58,13 @@ const BoardBar = ({ board }) => {
     const updatedBoard = { ...board, background };
     dispatch(updateCurrentActiveBoard(updatedBoard));
   };
+  const onUpdateBoardTitle = async (newTitle) => {
+    //Gọi API cập nhật title cho column và xử lý data board trong redux
+    await updateBoardDetailsAPI(board._id, { title: newTitle });
+    const newBoard = { ...board, title: newTitle };
+    dispatch(updateCurrentActiveBoard(newBoard));
+  };
+  console.log("BoardBar", board);
   return (
     <Box
       sx={{
@@ -81,7 +92,7 @@ const BoardBar = ({ board }) => {
           justifyContent: { xs: "center", md: "flex-end" }, // Center align on small screens
         }}>
         <Tooltip title={board?.description}>
-          <Chip
+          {/* <Chip
             sx={{
               color: theme.palette.primary.main,
               border: "none",
@@ -91,7 +102,15 @@ const BoardBar = ({ board }) => {
               fontSize: "20px",
             }}
             label={board?.title}
-          />
+          /> */}
+          <Box>
+            <ToggleFocusInputBoard
+              inputFontSize="20px"
+              value={board?.title}
+              onChangedValue={onUpdateBoardTitle}
+              data-no-dnd="true"
+            />
+          </Box>
         </Tooltip>
         <Tooltip title="Click to star or unstar this template. Starred templates show up at the top of your boards list.">
           <Box>

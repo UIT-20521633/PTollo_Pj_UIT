@@ -23,9 +23,10 @@ export const getUsersInBoard = createAsyncThunk(
 );
 export const getMessagesInBoard = createAsyncThunk(
   `/messages/getMessagesInBoard`,
-  async (userId) => {
+  async (data) => {
     const response = await authorizedAxiosInstance.get(
-      `${API_ROOT}/v1/messages/${userId}`
+      `${API_ROOT}/v1/messages/${data.userId}`,
+      { params: { boardId: data.boardId } }
     );
     return response.data;
   }
@@ -40,7 +41,7 @@ export const sendMessage = createAsyncThunk(
     }
     const response = await authorizedAxiosInstance.post(
       `${API_ROOT}/v1/messages/send/${selectedUser._id}`, // Sử dụng selectedUser._id
-      data // Nội dung tin nhắn
+      data
     );
     return response.data;
   }
@@ -73,6 +74,7 @@ export const chatSlice = createSlice({
     builder.addCase(getMessagesInBoard.fulfilled, (state, action) => {
       //action.payload chính là response.data trả về ở trên
       state.messages = action.payload;
+      state.unreadCount = action.payload.filter((msg) => !msg.isRead).length;
     });
     //sẽ hứng data trả về từ sendMessage và xử lý dữ liệu ở đây
     builder.addCase(sendMessage.fulfilled, (state, action) => {

@@ -88,7 +88,7 @@ const ListHomePage = () => {
                   <CardSmall
                     title={board?.board?.title}
                     description={board?.board?.description}
-                    boardId={board?.board?.boardId}
+                    boardId={board?.boardId}
                     background={board?.board?.background}
                   />
                 </ListItemButton>

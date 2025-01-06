@@ -138,7 +138,14 @@ const DashBoard = ({ hideNav }) => {
   const userId = useSelector(selectCurrentUser)._id;
   socketIoInstance.emit("registerUser", { userId: userId });
   return (
-    <AppProvider navigation={NAVIGATION_MAIN} theme={theme}>
+    <AppProvider
+      navigation={NAVIGATION_MAIN}
+      theme={theme}
+      branding={{
+        logo: <img src="/icons/icon.png" alt="MUI logo" />,
+        title: "MUI",
+        homeUrl: "/toolpad/core/introduction",
+      }}>
       <DashboardLayout
         hideNavigation={hideNav}
         slots={{
@@ -152,31 +159,31 @@ const DashBoard = ({ hideNav }) => {
                   alignItems: "center",
                   overflowX: "auto",
                 }}>
-                <Box
-                  onClick={() => {
-                    navigate("/");
-                  }}
-                  sx={{
-                    position: "absolute",
-                    top: "0",
-                    left: "3.7rem",
-                    cursor: "pointer",
-                  }}>
-                  <img
-                    src="icons/icon.png"
-                    alt="PTollo Logo"
-                    style={{ width: "60px", height: "60px" }}
-                  />
-                </Box>
-                <Box
-                  sx={{
-                    ml: 2,
-                  }}></Box>
-                <Box
-                  sx={{
-                    ml: 2,
-                  }}></Box>
                 <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                  <Box
+                    onClick={() => {
+                      navigate("/");
+                    }}
+                    sx={{
+                      position: "absolute",
+                      top: "0",
+                      left: hideNav ? "1.3rem" : "4rem",
+                      cursor: "pointer",
+                    }}>
+                    <img
+                      src="/icons/icon.png"
+                      alt="PTollo Logo"
+                      style={{ width: "60px", height: "60px" }}
+                    />
+                  </Box>
+                  <Box
+                    sx={{
+                      ml: 2,
+                    }}></Box>
+                  <Box
+                    sx={{
+                      ml: 2,
+                    }}></Box>
                   {/* <WorkSpace /> */}
                   <Recent />
                   <Starred />

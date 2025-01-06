@@ -75,6 +75,10 @@ export const activeBoardSlice = createSlice({
     setCompletionBoard: (state, action) => {
       state.completionBoard = action.payload;
     },
+    resetActiveBoard: (state) => {
+      state.currentActiveBoard = null;
+      state.completionBoard = null;
+    },
   },
   //ExtraReducers: Nơi xử lý dữ liệu bất đồng bộ
   extraReducers: (builder) => {
@@ -111,8 +115,12 @@ export const activeBoardSlice = createSlice({
 });
 //Actions: là nơi dành cho các component bên dưới gọi bằng dispatch() tới nó để cập nhật dữ liệu thông qua reducer (chạy đồng bộ)(câp nhật dữ liệu trong store)
 //Để ý ở trên thì không thấy properties actions nào cả, vì Toolkit đã tự sinh ra nó theo tên của reducer
-export const { updateCurrentActiveBoard, updateCardInBoard } =
-  activeBoardSlice.actions;
+export const {
+  updateCurrentActiveBoard,
+  updateCardInBoard,
+  setCompletionBoard,
+  resetActiveBoard,
+} = activeBoardSlice.actions;
 
 //Selectors: là nơi dành cho các component bên dưới gọi bằng useSelector() để lấy dữ liệu từ store ra sử dụng (lấy dữ liệu từ store ra bên ngoài)
 export const selectCurrentActiveBoard = (state) => {

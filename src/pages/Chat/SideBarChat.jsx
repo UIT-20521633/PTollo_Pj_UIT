@@ -28,11 +28,15 @@ const SideBarChat = () => {
   const dispatch = useDispatch();
   const users = useSelector(selectUsers); // Lấy thông tin tất cả user
   const selectedUser = useSelector(selectSelectedUser); // Lấy thông tin user đang được chọn
-  const onlineUsers = useSelector(selectOnlineUsers); // Lấy thông tin user đang online
+  const onlineUsersId = useSelector(selectOnlineUsers); // Lấy thông tin user đang online
   const [showOnlineOnly, setShowOnlineOnly] = useState(false);
 
   const boardId = useSelector(selectCurrentActiveBoard)._id;
   const [loading, setLoading] = useState(false);
+  //Kiểm tra user online có thuộc board đang chọn không
+  const onlineUsersInBoard = users?.filter((user) =>
+    onlineUsersId?.includes(user._id)
+  );
   useEffect(() => {
     const fetchUsers = async () => {
       if (boardId) {
@@ -49,7 +53,7 @@ const SideBarChat = () => {
   };
   const filteredUsers = showOnlineOnly
     ? // Nếu showOnlineOnly = true thì chỉ hiển thị những user đang online
-      users?.filter((user) => onlineUsers?.includes(user._id)) // Lọc những user có trong mảng onlineUsers
+      users?.filter((user) => onlineUsersId?.includes(user._id)) // Lọc những user có trong mảng onlineUsers
     : users;
   if (loading) {
     return <SlideBarSkeleton />;
@@ -107,7 +111,7 @@ const SideBarChat = () => {
           <Typography variant="body2">Show online only</Typography>
         </Box>
         <Typography variant="caption" color="text.secondary">
-          ({onlineUsers?.length - 1} online)
+          {onlineUsersInBoard.length} online
         </Typography>
       </Box>
       {/* User List */}
@@ -163,7 +167,7 @@ const SideBarChat = () => {
                   bgcolor: "grey.300",
                 }}
               />
-              {onlineUsers?.includes(user._id) && (
+              {onlineUsersId?.includes(user._id) && (
                 <span
                   className="absolute bottom-0 right-0 size-3 bg-green-500 
                   rounded-full ring-2 ring-zinc-900"
@@ -182,7 +186,7 @@ const SideBarChat = () => {
                 {user?.displayName}
               </Typography>
               <Typography variant="body2" color="text.secondary">
-                {onlineUsers?.includes(user?._id) ? "Online" : "Offline"}
+                {onlineUsersId?.includes(user?._id) ? "Online" : "Offline"}
               </Typography>
             </Box>
           </Button>

@@ -5,12 +5,7 @@ import IconButton from "@mui/material/IconButton";
 import Avatar from "@mui/material/Avatar";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  getMessagesInBoard,
-  selectMessages,
-  selectSelectedUser,
-  setSelectedUser,
-} from "~/redux/Chats/chatSlice";
+import { selectSelectedUser, setSelectedUser } from "~/redux/Chats/chatSlice";
 import { selectOnlineUsers } from "~/redux/user/userSlice";
 const ChatHeader = () => {
   const selectedUser = useSelector(selectSelectedUser);

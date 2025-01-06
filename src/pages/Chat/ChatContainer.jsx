@@ -6,7 +6,6 @@ import {
   getMessagesInBoard,
   selectMessages,
   selectSelectedUser,
-  sendMessage,
   setMessages,
 } from "~/redux/Chats/chatSlice";
 import ChatHeader from "./ChatHeader";
@@ -14,10 +13,12 @@ import MessageInput from "./MessageInput";
 import MessageSkeleton from "../../components/Skeletons/MessageSkeleton";
 import { selectCurrentUser } from "~/redux/user/userSlice";
 import { initializeSocket } from "~/utils/socketManager";
+import { selectCurrentActiveBoard } from "~/redux/activeBoard/activeBoardSlice";
 
 const ChatContainer = () => {
   const dispatch = useDispatch();
   const selectUser = useSelector(selectSelectedUser);
+  const board = useSelector(selectCurrentActiveBoard);
   const authUser = useSelector(selectCurrentUser);
   const selectMessagesUser = useSelector(selectMessages);
   const messageEndRef = useRef(null); // Tham chiếu đến cuối của danh sách tin nhắn
@@ -45,7 +46,9 @@ const ChatContainer = () => {
     const fetchMessages = async () => {
       if (selectUser) {
         setLoading(true);
-        dispatch(getMessagesInBoard(selectUser._id));
+        await dispatch(
+          getMessagesInBoard({ boardId: board._id, userId: selectUser._id })
+        );
         setLoading(false);
         subscribeToMessages();
 
